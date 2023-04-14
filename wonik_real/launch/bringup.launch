@@ -9,7 +9,8 @@
 	<include file="$(find wonik_real)/configs/kinematics/kinematics.launch"/> 
 
 	<!--sensors-->
-	 <include file="$(find wonik_real)/configs/lidar/lidar.launch"/>
+	<include file="$(find wonik_real)/configs/lidar/lidar.launch"/>
+	<include file="$(find wonik_real)/configs/imu/imu.launch"/>
 
 	<!--teleoperation-->
 	<include file="$(find wonik_real)/configs/teleop/teleop_keyboard.launch"/>
