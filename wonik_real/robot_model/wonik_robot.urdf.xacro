@@ -12,7 +12,7 @@
 
   <!-- USS and IMU - Comment/Uncomment if required  -->
 
-  <!--<xacro:include filename="$(find wonik_real)/robot_model/urdf/wonik_robot_xacros/imu.xacro" /> -->
+  <xacro:include filename="$(find wonik_real)/robot_model/urdf/wonik_robot_xacros/imu.xacro" />
 
 
   <!-- CABINET --> 
@@ -55,9 +55,9 @@
 
      <!--+++++++++++++++++++ IMU ++++++++++++++++++++++++-->
  <!-- Comment or uncomment based on your requirement -->
-<!--   <xacro:imu name="imu_1" parent="base_link">
+  <xacro:imu name="imu_1" parent="base_link">
     <origin xyz="0.100 0 0.300" rpy="0 0 3.14" />
-  </xacro:imu> -->
+  </xacro:imu>
 
 
     <!--Camera  -->
@@ -66,9 +66,9 @@
   </xacro:camera> -->
   
   <!--cabinet-->
-<!--   <xacro:wonik_robot_cabinet name="cabinet" parent="base_link">
+  <!-- <xacro:cabinet name="cabinet" parent="base_link">
   	<origin xyz="0.072 0 0.386" rpy="0 0 0" />
-  </xacro:wonik_robot_cabinet>
- -->
+  </xacro:cabinet> -->
+
 
 </robot>

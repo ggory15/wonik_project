@@ -22,14 +22,14 @@
     <visual>
      <origin xyz="0 0 0" rpy="0 0 0"/>
      <geometry>
-        <mesh filename="package://wonik_robot/robot_model/meshes/wonik_robot/MPO-500-WHEEL.dae" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://wonik_real/robot_model/meshes/wonik_robot/WHEEL.dae" scale="0.001 0.001 0.001"/>
      </geometry>
     </visual>
 
     <collision>
      <origin xyz="0 0 0" rpy="0 0 0" />
      <geometry>
-        <mesh filename="package://wonik_robot/robot_model/meshes/wonik_robot/MPO-500-WHEEL.dae" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://wonik_real/robot_model/meshes/wonik_robot/WHEEL.dae" scale="0.001 0.001 0.001"/>
      </geometry>
     </collision>
    </link>
