@@ -1,0 +1,10 @@
+<launch>
+<!-- launch imu without rviz -->
+
+  <arg name="port" default="/dev/imu"/>
+  <node pkg="rda_imu_driver" type="rda_imu_driver_node" name="rda_imu_node" output="screen">
+    	<param name="port" value="$(arg port)" />
+	<remap from="/imu/data" to="/imu_data"/>  
+  </node>
+
+</launch>

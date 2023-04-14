@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<package>
+  <name>wonik_real</name>
+  <version>0.1.0</version>
+  <description>The wonik_real package</description>
+
+  <maintainer email="kim87@khu.ac.kr">Sanghyun Kim</maintainer>
+  <license>BSD</license>
+  <author>Sanghyun Kim</author>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+
+  <!-- The export tag contains other, unspecified, tags -->
+  <export>
+    <!-- Other tools can request additional information be placed here -->
+
+  </export>
+</package>

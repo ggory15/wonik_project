@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<launch>
+
+	<!--SICK TiM561-->
+	<include file="$(find wonik_real)/configs/lidar/sick/s561/sick_s561.launch"/>
+
+</launch>

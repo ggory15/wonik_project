@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+
+<launch>
+
+        <include file="$(find wonik_real)/configs/navigation/amcl/amcl_basic.launch"/>
+        <include file="$(find wonik_real)/configs/navigation/move_base/move_base.launch"/>
+
+</launch>

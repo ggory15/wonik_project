@@ -1,0 +1,74 @@
+<?xml version="1.0" ?>
+<robot name="wonik_robot" xmlns:xacro="http://ros.org/wiki/xacro">
+
+  <!-- BODY -->
+  <xacro:include filename="$(find wonik_real)/robot_model/urdf/wonik_robot_xacros/body.xacro" />
+ 
+  <!-- WHEELS -->
+  <xacro:include filename="$(find wonik_real)/robot_model/urdf/wonik_robot_xacros/omni_wheel.xacro" />
+
+  <!-- SENSORS --> 
+  <xacro:include filename="$(find wonik_real)/robot_model/urdf/wonik_robot_xacros/sick_S561.xacro" />
+
+  <!-- USS and IMU - Comment/Uncomment if required  -->
+
+  <!--<xacro:include filename="$(find wonik_real)/robot_model/urdf/wonik_robot_xacros/imu.xacro" /> -->
+
+
+  <!-- CABINET --> 
+  <xacro:include filename="$(find wonik_real)/robot_model/urdf/wonik_robot_xacros/cabinet.xacro" />
+
+  <!-- Base Macro-->
+<link name="base_link" />
+
+  <!-- Base link macro -->
+  <xacro:wonik_robot_base name="base_footprint" parent="base_link">
+    <origin xyz="0 0 0" rpy="0 0 0" />
+  </xacro:wonik_robot_base>
+
+
+  <!-- Wheel Macro -->
+  <xacro:omni_wheel_250 name="wonik_robot_wheel_front_left" parent="base_footprint">
+  	<origin xyz="0.25 0.28 0.13" rpy="0 0 0" />
+  </xacro:omni_wheel_250>
+
+  <xacro:omni_wheel_250 name="wonik_robot_wheel_front_right" parent="base_footprint">
+  	<origin xyz="0.25 -0.28 0.13" rpy="0 0 3.14" />
+  </xacro:omni_wheel_250>
+
+  <xacro:omni_wheel_250 name="wonik_robot_wheel_back_left" parent="base_footprint">
+  	<origin xyz="-0.25 0.28 0.13" rpy="0 0 0" />
+  </xacro:omni_wheel_250>
+
+  <xacro:omni_wheel_250 name="wonik_robot_wheel_back_right" parent="base_footprint">
+  	<origin xyz="-0.25 -0.28 0.13" rpy="0 0 3.14" />
+  </xacro:omni_wheel_250>
+
+  <!-- Sensors -->
+  <xacro:sick_laser_v0 name="lidar_1" parent="base_link" ros_topic="lidar_1/scan">
+    <origin xyz="0.442 0 0.372" rpy="0 0 0" />
+  </xacro:sick_laser_v0>
+
+  <xacro:sick_laser_v0 name="lidar_2" parent="base_link" ros_topic="lidar_2/scan">
+    <origin xyz="-0.442 0 0.372" rpy="0 0 3.14" />
+  </xacro:sick_laser_v0>
+
+     <!--+++++++++++++++++++ IMU ++++++++++++++++++++++++-->
+ <!-- Comment or uncomment based on your requirement -->
+<!--   <xacro:imu name="imu_1" parent="base_link">
+    <origin xyz="0.100 0 0.300" rpy="0 0 3.14" />
+  </xacro:imu> -->
+
+
+    <!--Camera  -->
+<!-- <xacro:camera name="camera" parent="base_link">
+    <origin xyz="0 0 0.38" rpy="0 0 0" />
+  </xacro:camera> -->
+  
+  <!--cabinet-->
+<!--   <xacro:wonik_robot_cabinet name="cabinet" parent="base_link">
+  	<origin xyz="0.072 0 0.386" rpy="0 0 0" />
+  </xacro:wonik_robot_cabinet>
+ -->
+
+</robot>
