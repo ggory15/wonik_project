@@ -12,6 +12,9 @@
 	<include file="$(find wonik_real)/configs/lidar/lidar.launch"/>
 	<include file="$(find wonik_real)/configs/imu/imu.launch"/>
 
+	<!--sensor fusion test-->
+	<!-- <include file="$(find wonik_real)/configs/sensor_fusion/robot_localization.launch"/> -->
+
 	<!--teleoperation-->
 	<include file="$(find wonik_real)/configs/teleop/teleop_keyboard.launch"/>
 
