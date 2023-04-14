@@ -1,0 +1,7 @@
+<library path="lib/libwonik_local_planner">
+  <class name="wonik_local_planner/WonikLocalPlanner" type="wonik_local_planner::WonikLocalPlanner" base_class_type="nav_core::BaseLocalPlanner">
+    <description>
+      A implementation of a local planner.
+    </description>
+  </class>
+</library>

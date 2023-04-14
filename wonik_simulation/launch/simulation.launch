@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<launch>
+
+  <!--set to the required robot type and world-->
+  <arg name="robot_type" default="wonik"/>
+  <arg name="robot_world" default="workshop.world"/>
+  <arg name="global_map_name" default="$(find wonik_simulation)/maps/workshop.yaml"/>
+  <!--arg name="world_name" value=""/-->
+
+  <!--To launch RVIZ set the value to true-->
+  <arg name="rviz" default="true"/>
+
+
+  <!--To launch move base set the value to true-->
+  <arg name="autonomous_navigation" default="true"/>
+
+<!---=================================================================================================================================================================-->
+
+  <!-- Basic Simulation -->
+  <include file="$(find wonik_simulation)/launch/$(arg robot_type)_simulation_basic.launch">
+	  <arg name="world_name_global" value="$(arg robot_world)"/>
+  </include>
+
+  <!-- Autonomous Navigation -->
+  <group if="$(arg autonomous_navigation)">
+      <include file="$(find wonik_simulation)/launch/$(arg robot_type)_autonomous_navigation.launch">
+      <arg name="map_name" value="$(arg global_map_name)"/>
+      </include>
+  </group>
+
+  <!-- RVIZ -->
+  <group if="$(arg rviz)">
+      <include file="$(find wonik_simulation)/launch/$(arg robot_type)_rviz.launch"/>
+  </group>
+
+<!---=================================================================================================================================================================-->
+
+
+</launch>

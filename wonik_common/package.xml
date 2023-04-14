@@ -1,0 +1,17 @@
+<package>
+    <name>wonik_common</name>
+    <version>1.0.0</version>
+    <description>
+		Common Wonik Robot functionality to be shared with other packages.
+    </description>
+    <maintainer email="kim87@khu.ac.kr">Sanghyun Kim</maintainer>
+    <license>BSD</license>
+    <author>Sanghyun Kim</author>
+
+    <buildtool_depend>catkin</buildtool_depend>
+
+    <build_depend>cmake_modules</build_depend>
+
+</package>
+
+

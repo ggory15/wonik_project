@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<launch>
+  
+  <!--To launch gmapping to create a map-->
+  <arg name="gmapping" value="false"/> 
+
+  <!--To launch amcl-->
+  <!--NOTE: Do not forget to configure the correct Map for AMCL-->
+  <!--NOTE: Use file wonik_simulation/config/wonik_robot/amcl/wonik_robot_amcl.launch-->
+  <arg name="amcl" value="false"/>
+
+  <!-- To use wonik_localization -->
+  <arg name="wonik_localization" value="true"/>
+  
+  <!--To launch move base-->
+  <arg name="move_base" value="true"/>
+
+  <arg name="map_name" default="map_name"/>
+
+<!---=================================================================================================================================================================-->
+
+ <!--Naviagation Package-->
+
+ <!--if arg gmapping is set to true (default=false)-->
+ <group if="$(arg gmapping)">
+ 	<include file="$(find wonik_simulation)/config/gmapping/wonik_robot_gmapping.launch"/>
+ </group>
+
+ <!--if arg amcl is set to true (default=false)-->
+ <group if="$(arg amcl)">
+ 	<include file="$(find wonik_simulation)/config/amcl/wonik_robot_amcl.launch"/>
+ </group>
+
+  <group if="$(arg wonik_localization)">
+    <include file="$(find wonik_simulation)/launch/wonik_localization.launch">
+      <arg name="loc_map_name" value="$(arg map_name)"/>
+    </include>
+  </group>
+
+ <!--if arg move_base is set to true-->
+
+ <group if="$(arg move_base)">
+ 	<include file="$(find wonik_simulation)/config/move_base/wonik_robot_move_base.launch"/>
+ </group> 
+
+
+</launch>

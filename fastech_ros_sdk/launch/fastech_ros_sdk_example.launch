@@ -1,0 +1,7 @@
+<launch>
+    <node name ="fastech_ros_sdk" pkg="fastech_ros_sdk" type="fastech_ros_sdk"  output="screen" args="-keyboard">
+        <param name="motor_ip" type="string" value="192.168.0.2"/>
+        <param name="port" type="int" value="3002"/>
+    </node>
+
+</launch>

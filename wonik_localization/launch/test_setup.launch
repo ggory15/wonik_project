@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<launch>
+	
+    <!-- upload parameters -->
+    <rosparam command="load" ns="localization" file="$(find wonik_localization)/launch/test_setup.yaml"/>
+	
+    <!-- start nodes -->
+    <node pkg="wonik_localization" type="wonik_localization_node" ns="localization" name="wonik_localization_node" respawn="false" output="screen">
+    	<remap from="/scan" to="/lidar_1/scan_filtered"/>
+    </node>
+
+</launch>
