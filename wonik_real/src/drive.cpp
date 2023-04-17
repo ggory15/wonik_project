@@ -1,5 +1,7 @@
 #include <math.h>
 #include <wonik_drive/drive.hpp>
+#include <thread>
+#include <mutex>
 
 WonikDriveNode::WonikDriveNode(){
     m_Drives[0].sName = "FR";
@@ -15,10 +17,38 @@ WonikDriveNode::~WonikDriveNode(){
     }
 }
 
+void WonikDriveNode::servo_on(int i){
+
+    std::string msg = "Motor " + std::to_string(i) + " servo on";
+    ROS_WARN_STREAM(msg);
+
+    static std::mutex m;
+    std::lock_guard<std::mutex> gaurd(m);
+    m_ctrl[i] = std::make_shared<FastechStepWrapper>(m_Drives[i].ip_address,  m_Drives[i].port);
+    int iret = m_ctrl[i]->Connect();
+
+    if (iret != FMM_OK){
+        ROS_ERROR("INIT_CONFIG_MOTOR %d", i);
+        for (int j=0; j<i; j++){
+            iret = m_ctrl[i]->MotorStop();
+        }
+    }
+
+    ros::Duration duration(0.5);       
+    
+    m_ctrl[i]->Reset();
+    m_ctrl[i]->ServoEnable(true);
+    m_Drives[i].servo_on = true;
+
+    duration.sleep();  
+    iret = m_ctrl[i]->SetVelocity(500000, true); 
+    iret = m_ctrl[i]->SetVelocityOveride(30000);
+
+    m_Drives[i].servo_on = true;
+}
+
 int WonikDriveNode::init()
 {
-    ros::Duration duration3(3.0);
-    
 
     for (int i=0; i<4; i++){
         const std::string parent = "drive" + std::to_string(i + 1) + "/";
@@ -28,33 +58,17 @@ int WonikDriveNode::init()
         n.getParam(parent + "joint_name", m_Drives[i].sName);
         
         m_Drives[i].servo_on = false;
-
-        ROS_WARN_STREAM(m_Drives[i].ip_address);
-        m_ctrl[i] = std::make_shared<FastechStepWrapper>( "10.42.0.114",  m_Drives[i].port);
-        int iret = m_ctrl[i]->Connect();
-
-        if (iret != FMM_OK){
-            ROS_ERROR("INIT_CONFIG_MOTOR %d", i);
-            for (int j=0; j<i; j++){
-                iret = m_ctrl[i]->MotorStop();
-            }
-        }
-
-        ros::Duration duration(0.5);
-        duration.sleep();  
-        
-        m_ctrl[i]->Reset();
-         duration.sleep();  
-        
-        m_ctrl[i]->ServoEnable(true);
-        m_Drives[i].servo_on = true;
-
-        duration.sleep();  
-        iret = m_ctrl[i]->SetVelocity(500000, true); 
-        iret = m_ctrl[i]->SetVelocityOveride(30000);
-
-        duration3.sleep();  
     }
+
+    std::vector<std::thread> threads;
+
+    threads.emplace_back(&WonikDriveNode::servo_on, this, 1); // motor 1 servo on
+    threads.emplace_back(&WonikDriveNode::servo_on, this, 2); // motor 2 servo on
+    threads.emplace_back(&WonikDriveNode::servo_on, this, 3); // motor 3 servo on
+    threads.emplace_back(&WonikDriveNode::servo_on, this, 4); // motor 4 servo on
+    
+    for (auto &thread : threads)
+        thread.join();
     
     topicPub_drives = n.advertise<sensor_msgs::JointState>("/drives/joint_states", 1);
     topicSub_drives = n.subscribe("/drives/joint_trajectory", 1, &WonikDriveNode::getNewVelocitiesFromTopic, this);

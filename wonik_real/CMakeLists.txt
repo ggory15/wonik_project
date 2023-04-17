@@ -33,10 +33,10 @@ catkin_package(
 set(LIBRARY_NAME wonik_drive)
 include_directories(include ${Boost_INCLUDE_DIRS} ${catkin_INCLUDE_DIRS})
 add_library(${LIBRARY_NAME} src/drive.cpp)
-add_dependencies(${LIBRARY_NAME} ${catkin_EXPORTED_TARGETS} fastech_sdk )
+add_dependencies(${LIBRARY_NAME} ${catkin_EXPORTED_TARGETS} fastech_sdk -lpthread)
 
 add_executable(${LIBRARY_NAME}_node src/drive_node.cpp)
-target_link_libraries(${LIBRARY_NAME}_node ${LIBRARY_NAME} fastech_sdk )
+target_link_libraries(${LIBRARY_NAME}_node ${LIBRARY_NAME} fastech_sdk -lpthread)
 target_link_libraries(${LIBRARY_NAME}_node ${catkin_LIBRARIES})
 add_dependencies(${LIBRARY_NAME}_node ${catkin_EXPORTED_TARGETS}  )
 

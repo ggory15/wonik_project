@@ -60,6 +60,10 @@ public:
 	// --- Timer Callbacks ---
 	void print_info(const ros::TimerEvent&);
 
+	// --- Motor Servo on with thread ---
+	void servo_on(int  motor_index);
+
+
 private:
 	// ---- Motors ----
 	DriveParam m_Drives[4];
