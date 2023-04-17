@@ -34,15 +34,15 @@ void WonikDriveNode::servo_on(int i){
         }
     }
 
-    ros::Duration duration(0.5);       
-    
+
     m_ctrl[i]->Reset();
     m_ctrl[i]->ServoEnable(true);
     m_Drives[i].servo_on = true;
 
-    duration.sleep();  
+    std::this_thread::sleep_for(std::chrono::seconds(1));
     iret = m_ctrl[i]->SetVelocity(500000, true); 
     iret = m_ctrl[i]->SetVelocityOveride(30000);
+    ROS_WARN_STREAM("Servo on is Done");
 
     m_Drives[i].servo_on = true;
 }
@@ -64,8 +64,8 @@ int WonikDriveNode::init()
 
     threads.emplace_back(&WonikDriveNode::servo_on, this, 1); // motor 1 servo on
     threads.emplace_back(&WonikDriveNode::servo_on, this, 2); // motor 2 servo on
-    threads.emplace_back(&WonikDriveNode::servo_on, this, 3); // motor 3 servo on
-    threads.emplace_back(&WonikDriveNode::servo_on, this, 4); // motor 4 servo on
+    // threads.emplace_back(&WonikDriveNode::servo_on, this, 3); // motor 3 servo on
+    // threads.emplace_back(&WonikDriveNode::servo_on, this, 4); // motor 4 servo on
     
     for (auto &thread : threads)
         thread.join();
