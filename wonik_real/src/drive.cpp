@@ -17,6 +17,9 @@ WonikDriveNode::~WonikDriveNode(){
 
 int WonikDriveNode::init()
 {
+    ros::Duration duration3(3.0);
+    
+
     for (int i=0; i<4; i++){
         const std::string parent = "drive" + std::to_string(i + 1) + "/";
         n.param(parent + "ip_address", m_Drives[i].ip_address, std::string("192.168.0.3"));
@@ -26,7 +29,8 @@ int WonikDriveNode::init()
         
         m_Drives[i].servo_on = false;
 
-        m_ctrl[i] = std::make_shared<FastechStepWrapper>(m_Drives[i].ip_address, m_Drives[i].port);
+        ROS_WARN_STREAM(m_Drives[i].ip_address);
+        m_ctrl[i] = std::make_shared<FastechStepWrapper>( "10.42.0.114",  m_Drives[i].port);
         int iret = m_ctrl[i]->Connect();
 
         if (iret != FMM_OK){
@@ -36,14 +40,20 @@ int WonikDriveNode::init()
             }
         }
 
-        ros::Duration duration(0.1);
+        ros::Duration duration(0.5);
+        duration.sleep();  
+        
         m_ctrl[i]->Reset();
+         duration.sleep();  
+        
         m_ctrl[i]->ServoEnable(true);
         m_Drives[i].servo_on = true;
 
         duration.sleep();  
         iret = m_ctrl[i]->SetVelocity(500000, true); 
-        iret = m_ctrl[i]->SetVelocityOveride(0);
+        iret = m_ctrl[i]->SetVelocityOveride(30000);
+
+        duration3.sleep();  
     }
     
     topicPub_drives = n.advertise<sensor_msgs::JointState>("/drives/joint_states", 1);
@@ -117,6 +127,8 @@ void WonikDriveNode::getNewVelocitiesFromTopic(const trajectory_msgs::JointTraje
 	for (int i = 0; i < 4; i++)
 	{
         double vel = RADSEC2PPS(d_point.velocities[i] * (double)m_Drives[i].gear_ratio); //rad/sec * gear_ratio = pps
+
+        ROS_INFO_STREAM(vel);
     
 		if (fabs(vel >= 0.1)){
             iret = m_ctrl[i]->SetVelocityOveride((int)vel );

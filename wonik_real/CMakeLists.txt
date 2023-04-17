@@ -21,6 +21,7 @@ find_package(catkin REQUIRED COMPONENTS
   trajectory_msgs
   fastech_ros_sdk
 )
+find_package(fastech_sdk)
 
 catkin_package(
 #  INCLUDE_DIRS include
@@ -32,10 +33,10 @@ catkin_package(
 set(LIBRARY_NAME wonik_drive)
 include_directories(include ${Boost_INCLUDE_DIRS} ${catkin_INCLUDE_DIRS})
 add_library(${LIBRARY_NAME} src/drive.cpp)
-add_dependencies(${LIBRARY_NAME} ${catkin_EXPORTED_TARGETS})
+add_dependencies(${LIBRARY_NAME} ${catkin_EXPORTED_TARGETS} fastech_sdk )
 
-# add_executable(${LIBRARY_NAME}_node src/drive_node.cpp)
-# target_link_libraries(${LIBRARY_NAME}_node ${PROJECT_NAME})
-# target_link_libraries(${LIBRARY_NAME}_node ${catkin_LIBRARIES})
-# add_dependencies(${LIBRARY_NAME}_node${catkin_EXPORTED_TARGETS})
+add_executable(${LIBRARY_NAME}_node src/drive_node.cpp)
+target_link_libraries(${LIBRARY_NAME}_node ${LIBRARY_NAME} fastech_sdk )
+target_link_libraries(${LIBRARY_NAME}_node ${catkin_LIBRARIES})
+add_dependencies(${LIBRARY_NAME}_node ${catkin_EXPORTED_TARGETS}  )
 

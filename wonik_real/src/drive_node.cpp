@@ -25,17 +25,19 @@ int main(int argc, char **argv)
 
 		while (nh.ok())
 		{
-			const ros::Time cycleStartTime = ros::Time::now();
+			//const ros::Time cycleStartTime = ros::Time::now();
 
 			// Communication
-			const int comState = node.HandleCommunication();
+			//const int comState = node.HandleCommunication();
 
 			// Motors
-			node.PublishJointStates();
+			//node.PublishJointStates();
 
 			ros::spinOnce();
 
-			const ros::Duration cycleTime = ros::Time::now() - cycleStartTime;
+			//const ros::Duration cycleTime = ros::Time::now() - cycleStartTime;
+
+			ROS_INFO_STREAM("check");
 
 			rate.sleep();
 		}

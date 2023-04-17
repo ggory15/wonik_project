@@ -1,4 +1,4 @@
-#! /usr/bin/python3 
+#! /usr/bin/python 
 
 import rospy
 from sensor_msgs.msg import JointState

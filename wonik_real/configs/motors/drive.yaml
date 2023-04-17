@@ -11,25 +11,25 @@
 #              motor configuration              #
 #################################################
 drive1: # FL
-  ip_address: 192.168.0.3
+  ip_address: 10.42.0.114
   port: 3002
   grea_ratio: 8
   joint_name: wheel_front_left_joint
 
 drive2: # FR
-  ip_address: 192.168.0.3
+  ip_address: 10.42.0.115
   port: 3002
   grea_ratio: 8
   joint_name: wheel_front_right_joint
   
 drive3: # RL
-  ip_address: 192.168.0.3
+  ip_address: 10.42.0.116
   port: 3002
   grea_ratio: 8
   joint_name: wheel_rear_left_joint
 
 drive4: # RR
-  ip_address: 192.168.0.3
+  ip_address: 10.42.0.117
   port: 3002
   grea_ratio: 8
   joint_name: wheel_rear_right_joint
