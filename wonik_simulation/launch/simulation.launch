@@ -17,6 +17,8 @@
 <!---=================================================================================================================================================================-->
 
   <!-- Basic Simulation -->
+  <!-- <include file="$(find wonik_real)/configs/sensor_fusion/robot_localization.launch"/> -->
+
   <include file="$(find wonik_simulation)/launch/$(arg robot_type)_simulation_basic.launch">
 	  <arg name="world_name_global" value="$(arg robot_world)"/>
   </include>

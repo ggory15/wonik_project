@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<launch>
+	
+	<!-- upload parameters -->
+	<rosparam command="load" ns="wonik_drive" file="$(find wonik_real)/configs/motors/drive.yaml"/>
+	
+	<!-- start drive node -->
+	<node pkg="wonik_real" type="wonik_drive_node" ns="wonik_drive" name="wonik_drive_node" respawn="false" output="screen"/>
+
+
+</launch>
