@@ -8,4 +8,14 @@
 	<include file="$(find wonik_real)/configs/kinematics/kinematics.launch"/> 
 
 	<include file="$(find wonik_real)/configs/teleop/teleop_keyboard.launch"/>
+
+	<include file="$(find wonik_real)/configs/imu/imu.launch"/>
+
+
+
+        <param name="robot_description" command="$(find xacro)/xacro --inorder '$(find wonik_real)/robot_model/wonik_robot.urdf.xacro'" />
+	<node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" >
+		<param name="use_gui" value="false" />
+	</node>
+	<node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />			
 </launch>

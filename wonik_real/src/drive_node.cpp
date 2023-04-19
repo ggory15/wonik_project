@@ -16,7 +16,6 @@ int main(int argc, char **argv)
 		if (node.init() != 0)
 			return 1;
 
-		// get parameters
 		double request_rate;   // [1/s]
 		node.n.param("request_rate", request_rate, 25.0); // Hz
 
@@ -25,19 +24,19 @@ int main(int argc, char **argv)
 
 		while (nh.ok())
 		{
-			//const ros::Time cycleStartTime = ros::Time::now();
+			const ros::Time cycleStartTime = ros::Time::now();
 
 			// Communication
-			//const int comState = node.HandleCommunication();
+			// const int comState = node.HandleCommunication();
 
 			// Motors
-			//node.PublishJointStates();
+			node.PublishJointStates();
 
 			ros::spinOnce();
 
-			//const ros::Duration cycleTime = ros::Time::now() - cycleStartTime;
+			const ros::Duration cycleTime = ros::Time::now() - cycleStartTime;
 
-			ROS_INFO_STREAM("check");
+			// ROS_INFO_STREAM("check");
 
 			rate.sleep();
 		}

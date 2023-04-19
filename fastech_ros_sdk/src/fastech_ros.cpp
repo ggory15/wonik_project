@@ -61,11 +61,12 @@ int main(int argc, char** argv)
     ros::NodeHandle nh;
     ros::Rate loop_rate(50);
 
-    std::string ip_address;
+    std::string ip_address, name;
     int port;
 
-    nh.getParam("/fastech_ros_sdk/motor_ip", ip_address);
-    nh.getParam("/fastech_ros_sdk/port", port);
+    nh.getParam("fastech_ros_sdk/motor_ip", ip_address);
+    nh.getParam("fastech_ros_sdk/port", port);
+    nh.getParam("fastech_ros_sdk/motor_name", name);
 
     ctrl_ = std::make_shared<FastechStepWrapper>(ip_address, port);
 
@@ -77,9 +78,9 @@ int main(int argc, char** argv)
     joint_state_.name[0] = ip_address;
     joint_state_.velocity[0] = 0.0;
 
-    ros::ServiceServer Servo_srv = nh.advertiseService("/fastech_ros_sdk/servo_on", servoOnCallback);
-    ros::Subscriber Set_Velocity_sub = nh.subscribe("/fastech_ros_sdk/set_velocity", 10, setVelocityCallback);
-    joint_state_pub_ = nh.advertise<sensor_msgs::JointState>("/fastech_ros_sdk/joint_states", 100);
+    ros::ServiceServer Servo_srv = nh.advertiseService("fastech_ros_sdk/" + name + "/servo_on", servoOnCallback);
+    ros::Subscriber Set_Velocity_sub = nh.subscribe("fastech_ros_sdk/" + name + "/set_velocity", 10, setVelocityCallback);
+    joint_state_pub_ = nh.advertise<sensor_msgs::JointState>("/fastech_ros_sdk/" + name + "/joint_states", 100);
 
     while(ros::ok())
     {

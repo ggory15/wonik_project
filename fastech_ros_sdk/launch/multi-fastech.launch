@@ -1,0 +1,18 @@
+<launch>
+    <group ns ="ns1">
+        <node name ="fastech_ros_sdk" pkg="fastech_ros_sdk" type="fastech_ros_sdk"  output="screen" args="-keyboard">
+            <param name="motor_ip" type="string" value="10.42.0.114"/>
+            <param name="port" type="int" value="3002"/>
+            <param name="motor_name" type="string" value="motor1"/>
+        </node>
+    </group>
+
+    <group ns ="ns2">
+        <node name ="fastech_ros_sdk" pkg="fastech_ros_sdk" type="fastech_ros_sdk"  output="screen" args="-keyboard">
+            <param name="motor_ip" type="string" value="10.42.0.115"/>
+            <param name="port" type="int" value="3002"/>
+            <param name="motor_name" type="string" value="motor2"/>
+        </node>
+    </group>
+
+</launch>

@@ -55,7 +55,7 @@
 
      <!--+++++++++++++++++++ IMU ++++++++++++++++++++++++-->
  <!-- Comment or uncomment based on your requirement -->
-  <xacro:imu name="imu_1" parent="base_link">
+  <xacro:imu name="imu" parent="base_link">
     <origin xyz="0.100 0 0.300" rpy="0 0 3.14" />
   </xacro:imu>
 

@@ -5,9 +5,9 @@
 
 WonikDriveNode::WonikDriveNode(){
     m_Drives[0].sName = "FR";
-    m_Drives[1].sName = "FL";
-    m_Drives[2].sName = "RR";
-    m_Drives[3].sName = "RL";  
+    m_Drives[1].sName = "FR";
+    m_Drives[2].sName = "FL";
+    m_Drives[3].sName = "RR";
 }
 
 WonikDriveNode::~WonikDriveNode(){
@@ -19,19 +19,16 @@ WonikDriveNode::~WonikDriveNode(){
 
 void WonikDriveNode::servo_on(int i){
 
-    std::string msg = "Motor " + std::to_string(i) + " servo on";
-    ROS_WARN_STREAM(msg);
-
+    std::string msg = "Motor " + std::to_string(i+1) + " servo on";
+    
     static std::mutex m;
     std::lock_guard<std::mutex> gaurd(m);
     m_ctrl[i] = std::make_shared<FastechStepWrapper>(m_Drives[i].ip_address,  m_Drives[i].port);
+    
     int iret = m_ctrl[i]->Connect();
-
+ 
     if (iret != FMM_OK){
         ROS_ERROR("INIT_CONFIG_MOTOR %d", i);
-        for (int j=0; j<i; j++){
-            iret = m_ctrl[i]->MotorStop();
-        }
     }
 
 
@@ -40,9 +37,9 @@ void WonikDriveNode::servo_on(int i){
     m_Drives[i].servo_on = true;
 
     std::this_thread::sleep_for(std::chrono::seconds(1));
-    iret = m_ctrl[i]->SetVelocity(500000, true); 
-    iret = m_ctrl[i]->SetVelocityOveride(30000);
-    ROS_WARN_STREAM("Servo on is Done");
+    iret = m_ctrl[i]->SetVelocity(100000, true); 
+    iret = m_ctrl[i]->SetVelocityOveride(0);
+    ROS_WARN_STREAM(msg);
 
     m_Drives[i].servo_on = true;
 }
@@ -62,11 +59,11 @@ int WonikDriveNode::init()
 
     std::vector<std::thread> threads;
 
-    threads.emplace_back(&WonikDriveNode::servo_on, this, 1); // motor 1 servo on
-    threads.emplace_back(&WonikDriveNode::servo_on, this, 2); // motor 2 servo on
-    // threads.emplace_back(&WonikDriveNode::servo_on, this, 3); // motor 3 servo on
-    // threads.emplace_back(&WonikDriveNode::servo_on, this, 4); // motor 4 servo on
-    
+    threads.emplace_back(&WonikDriveNode::servo_on, this, 0); // motor 1 servo on
+    threads.emplace_back(&WonikDriveNode::servo_on, this, 1);
+    threads.emplace_back(&WonikDriveNode::servo_on, this, 2);
+    threads.emplace_back(&WonikDriveNode::servo_on, this, 3);
+ 
     for (auto &thread : threads)
         thread.join();
     
@@ -106,7 +103,7 @@ int WonikDriveNode::HandleCommunication()
 
 void WonikDriveNode::PublishJointStates()
 {
-	long lEnc[8] = {0, 0, 0, 0};
+	long lEnc[4] = {0, 0, 0, 0};
 
 	sensor_msgs::JointState state;
 	state.header.stamp = m_tCurrentTimeStamp - ros::Duration(m_tMotorDelay);
@@ -139,12 +136,18 @@ void WonikDriveNode::getNewVelocitiesFromTopic(const trajectory_msgs::JointTraje
     int iret;
     
 	for (int i = 0; i < 4; i++)
-	{
+	{   
+        d_point.velocities[0] *= -1.;
+        d_point.velocities[2] *= -1.;
+        
         double vel = RADSEC2PPS(d_point.velocities[i] * (double)m_Drives[i].gear_ratio); //rad/sec * gear_ratio = pps
 
-        ROS_INFO_STREAM(vel);
+        // ROS_INFO_STREAM(vel);
+
+        m_ctrl[i]->GetActualVel();
+        m_ctrl[i]->Recieve();
     
-		if (fabs(vel >= 0.1)){
+		if (fabs(m_ctrl[i]->get_velocity()) >= 1){
             iret = m_ctrl[i]->SetVelocityOveride((int)vel );
         }
         else{
