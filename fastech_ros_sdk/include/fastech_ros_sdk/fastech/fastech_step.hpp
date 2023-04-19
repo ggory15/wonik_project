@@ -33,6 +33,7 @@ class FastechStepWrapper{
         int MotorStop();    
         int EmergencyStop();
         int SetVelocityOveride(unsigned int speed );
+        void EmptyRead();
         // int SetVelocityEx(unsigned int speed, bool direction, bool flagoption, unsigned short accdectime);
       
         // helper function;

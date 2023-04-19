@@ -44,7 +44,7 @@ int PlatformCtrlNode::init()
 	pose.phiAbs = 0;
 
 	double wheelDiameter, axisWidth, axisLength;
-	double devX, devY, devZ, devRoll, devPitch, devYaw;
+	double devX, devY, devZ, devRoll, devPitch, devYaw, factor;
 
 	nh.param("wheelDiameter", wheelDiameter, 0.3);
 	nh.param("robotWidth", axisWidth, 0.5);
@@ -55,6 +55,11 @@ int PlatformCtrlNode::init()
 	nh.param("devRoll", devRoll, 0.1);
 	nh.param("devPitch", devPitch, 0.1);
 	nh.param("devYaw", devYaw, 0.1);
+	nh.param("pacticalFactor", factor, 1.0);
+
+	axisWidth = axisWidth / factor;
+	axisLength = axisLength /factor;
+
 	nh.param<bool>("sendTransform", sendTransform, false);
 
 	kin->setWheelDiameter(wheelDiameter);
@@ -70,7 +75,7 @@ int PlatformCtrlNode::init()
 	kin->setStdDev(devX, devY, devZ, devRoll, devPitch, devYaw);
 	
 	topicPub_Odometry = nh.advertise<nav_msgs::Odometry>("/odom", 1);
-    topicSub_DriveState = nh.subscribe("/drives/joint_states", 1, &PlatformCtrlNode::sendOdom, this);
+    topicSub_DriveState = nh.subscribe("/joint_states", 1, &PlatformCtrlNode::sendOdom, this);
     topicPub_DriveCommands = nh.advertise<trajectory_msgs::JointTrajectory>("/drives/joint_trajectory", 1);
 	topicSub_ComVel = nh.subscribe("/cmd_vel", 1, &PlatformCtrlNode::receiveCmd, this);
 	return 0;
@@ -100,6 +105,8 @@ void PlatformCtrlNode::sendOdom(const sensor_msgs::JointState& js)
 	odom.header.frame_id = "odom";
 	odom.child_frame_id = "base_link";
 	kin->execForwKin(js, odom, pose);
+
+	// ROS_WARN_STREAM(odom);
 	topicPub_Odometry.publish(odom);
 
 	//odometry transform:

@@ -31,11 +31,13 @@ void Mecanum4WKinematics::execForwKin(const sensor_msgs::JointState& js, nav_msg
 	*/
 
 	//velocities:
+	
 	const double move_vel_x = (js.velocity[0] + js.velocity[1] + js.velocity[2] + js.velocity[3]) * m_dDiam / 8;
 	const double move_vel_y = (js.velocity[1] - js.velocity[0] - js.velocity[3] + js.velocity[2]) * m_dDiam / 8;
 	const double move_yawrate = (-js.velocity[0] + js.velocity[1] - js.velocity[2] + js.velocity[3]) * m_dDiam / 4
 									/ (m_dAxis1Length + m_dAxis2Length);
 
+	
 	//positions:
 	if(!last_time.is_zero())
 	{

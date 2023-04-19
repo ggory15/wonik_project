@@ -17,6 +17,7 @@ public:
 		port = 3006;
 		gear_ratio = 8;
 		servo_on = false;
+		current_vel = 0.0;
 	}
 
 	std::string ip_address;
@@ -24,6 +25,7 @@ public:
 	int gear_ratio;
     std::string sName;
 	bool servo_on;
+	double current_vel;
 
 
 

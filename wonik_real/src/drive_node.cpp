@@ -27,7 +27,7 @@ int main(int argc, char **argv)
 			const ros::Time cycleStartTime = ros::Time::now();
 
 			// Communication
-			// const int comState = node.HandleCommunication();
+			const int comState = node.HandleCommunication();
 
 			// Motors
 			node.PublishJointStates();

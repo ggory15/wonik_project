@@ -54,6 +54,20 @@ int FastechStepWrapper::Unpack(unsigned char* recv_data,unsigned char& comm_stat
         return FMM_PACKET_UNPACK_ERROR;
    }
 }
+void FastechStepWrapper::EmptyRead(){
+
+	try{
+		do{
+			adr_sz_ = sizeof(from_adr_);
+			str_len_= recvfrom(sock_, recieve_msg_, sizeof(recieve_msg_), MSG_DONTWAIT, (struct sockaddr*)&from_adr_, &adr_sz_);
+			// std::cout <<"str_len_ : " << str_len_ << std::endl;
+		} while(str_len_ > 0);
+	}
+	catch(std::string err)
+	{
+		std::cout << err << std::endl;
+	}
+}
 int FastechStepWrapper::Recieve(){
     try{
 		adr_sz_ = sizeof(from_adr_);
@@ -162,6 +176,7 @@ int FastechStepWrapper::SaveAllParam(){
 		return FMM_PACKET_BUILD_ERROR;
 	}
 }
+
 int FastechStepWrapper::GetActualVel(){
     try{
 		unsigned char GetActualVel[] = { 0xAA, 0x03, 0x00, 0x00, 0x55 };

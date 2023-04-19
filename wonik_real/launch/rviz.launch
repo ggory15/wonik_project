@@ -1,4 +1,5 @@
 <?xml version="1.0" ?>
 <launch>
     <node name="rviz" pkg="rviz" type="rviz" args="-d $(find wonik_real)/configs/rviz/basic_config.rviz" />
+    <!-- <remap from="/drives/joint_states" to="/joint_states"/> -->
 </launch>

@@ -67,11 +67,12 @@ int WonikDriveNode::init()
     for (auto &thread : threads)
         thread.join();
     
-    topicPub_drives = n.advertise<sensor_msgs::JointState>("/drives/joint_states", 1);
+    topicPub_drives = n.advertise<sensor_msgs::JointState>("/joint_states", 1);
     topicSub_drives = n.subscribe("/drives/joint_trajectory", 1, &WonikDriveNode::getNewVelocitiesFromTopic, this);
 
 
     m_info_timer = n.createTimer(ros::Duration(1), &WonikDriveNode::print_info, this);
+
 	return 0;
 }
 
@@ -79,27 +80,33 @@ int WonikDriveNode::HandleCommunication()
 {
     const ros::Time now = ros::Time::now();
 
-	// check for input timeout
-	if ((now - m_last_trajectory_time).toSec() > m_trajectory_timeout)
-	{
-		if (!is_trajectory_timeout && !m_last_trajectory_time.isZero()) {
-			ROS_WARN_STREAM("joint_trajectory input timeout! Stopping now.");
-		}
-		is_trajectory_timeout = true;
-	}
-	else {
-		is_trajectory_timeout = false;
-	}
+    m_tCurrentTimeStamp = ros::Time::now();
 
-	if (is_trajectory_timeout) {
-		for (int i = 0; i < 4; i++) {
-            m_ctrl[i]->SetVelocityOveride(0.0); // if there is somewhat wrong from nav2 pkg, i will set the motor speed as zero.
-		}
-	}
+	// check for input timeout
+	// if ((now - m_last_trajectory_time).toSec() > m_trajectory_timeout)
+	// {
+	// 	if (!is_trajectory_timeout && !m_last_trajectory_time.isZero()) {
+	// 		ROS_WARN_STREAM("joint_trajectory input timeout! Stopping now.");
+	// 	}
+	// 	is_trajectory_timeout = true;
+	// }
+	// else {
+	// 	is_trajectory_timeout = false;
+	// }
+
+	// if (is_trajectory_timeout) {
+	// 	for (int i = 0; i < 4; i++) {
+    //         m_ctrl[i]->SetVelocityOveride(0.0); // if there is somewhat wrong from nav2 pkg, i will set the motor speed as zero.
+	// 	}
+	// }
 
     return 0;
 }
 
+void WonikDriveNode::getJointState(int i){
+    static std::mutex m;
+    std::lock_guard<std::mutex> gaurd(m);
+}
 
 void WonikDriveNode::PublishJointStates()
 {
@@ -113,15 +120,23 @@ void WonikDriveNode::PublishJointStates()
 	state.position.resize(4);
 	state.velocity.resize(4);
 
+    int iret, iret2;
 	for (int i = 0; i < 4; i++)
-	{
-        m_ctrl[i]->GetActualVel();
-        m_ctrl[i]->Recieve();
+	{   
+        m_ctrl[i]->EmptyRead();
+        iret2 = m_ctrl[i]->GetActualVel();
+        iret2 = m_ctrl[i]->Recieve();
+        
         state.name[i] = m_Drives[i].sName.c_str();
         state.velocity[i] = PPS2RADSEC(m_ctrl[i]->get_velocity()) / (double)m_Drives->gear_ratio;	
+        m_Drives[i].current_vel = state.velocity[i] ;
 	}
 
-	topicPub_drives.publish(state);
+    state.velocity[0] *= -1.;
+    state.velocity[2] *= -1.;
+
+    if (iret == FMM_OK && iret2 == FMM_OK)
+	    topicPub_drives.publish(state);
 }
 
 void WonikDriveNode::getNewVelocitiesFromTopic(const trajectory_msgs::JointTrajectory jt)
@@ -144,10 +159,7 @@ void WonikDriveNode::getNewVelocitiesFromTopic(const trajectory_msgs::JointTraje
 
         // ROS_INFO_STREAM(vel);
 
-        m_ctrl[i]->GetActualVel();
-        m_ctrl[i]->Recieve();
-    
-		if (fabs(m_ctrl[i]->get_velocity()) >= 1){
+		if (fabs(m_Drives[i].current_vel) >= 1){
             iret = m_ctrl[i]->SetVelocityOveride((int)vel );
         }
         else{

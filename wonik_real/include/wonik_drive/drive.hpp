@@ -56,6 +56,7 @@ public:
 	// ---- Pubisher functions ----
 	// Motors
 	void PublishJointStates();
+	void getJointState(int i);
 
 	// --- Timer Callbacks ---
 	void print_info(const ros::TimerEvent&);
