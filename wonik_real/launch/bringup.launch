@@ -9,12 +9,15 @@
 
 	<include file="$(find wonik_real)/configs/teleop/teleop_keyboard.launch"/>
 
-	<include file="$(find wonik_real)/configs/imu/imu.launch"/>
+	<!-- <include file="$(find wonik_real)/configs/imu/imu.launch"/> -->
 
-	<include file="$(find wonik_real)/configs/lidar/lidar.launch"/>
+	<!-- <include file="$(find wonik_real)/configs/lidar/lidar.launch"/> -->
 
-	<include file="$(find wonik_real)/configs/sensor_fusion/robot_localization.launch"/>
+	<!-- <include file="$(find wonik_real)/configs/sensor_fusion/robot_localization.launch"/> -->
 
+	<!-- <include file="$(find wonik_real)/launch/navigation_basic_slam.launch"/> -->
+
+	
 	<param name="robot_description" command="$(find xacro)/xacro --inorder '$(find wonik_real)/robot_model/wonik_robot.urdf.xacro'" />
 	
 	<!-- <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" >
@@ -23,5 +26,5 @@
 	
 	<node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />	
 
-	<node name="rviz" pkg="rviz" type="rviz" args="-d $(find wonik_real)/configs/rviz/basic_config.rviz" />		
+<!--	<node name="rviz" pkg="rviz" type="rviz" args="-d $(find wonik_real)/configs/rviz/basic_config.rviz" /> -->		
 </launch>

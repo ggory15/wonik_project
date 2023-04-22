@@ -46,11 +46,11 @@
 
   <!-- Sensors -->
   <xacro:sick_laser_v0 name="lidar_1" parent="base_link" ros_topic="lidar_1/scan">
-    <origin xyz="0.463193 0.310743 0.18904" rpy="0 0 0" />
+    <origin xyz="0.463193 0.320743 0.18904" rpy="3.14 0 0.785" />
   </xacro:sick_laser_v0>
 
   <xacro:sick_laser_v0 name="lidar_2" parent="base_link" ros_topic="lidar_2/scan">
-    <origin xyz="-0.463193 -0.310743 0.18904" rpy="3.14 0 3.14" />
+    <origin xyz="-0.463193 -0.320743 0.18904" rpy="3.14 0 3.925" />
   </xacro:sick_laser_v0>
 
      <!--+++++++++++++++++++ IMU ++++++++++++++++++++++++-->

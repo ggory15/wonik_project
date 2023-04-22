@@ -159,12 +159,19 @@ void WonikDriveNode::getNewVelocitiesFromTopic(const trajectory_msgs::JointTraje
 
         // ROS_INFO_STREAM(vel);
 
-		if (fabs(m_Drives[i].current_vel) >= 1){
+		if (fabs(m_Drives[i].current_vel) >= 100){
             iret = m_ctrl[i]->SetVelocityOveride((int)vel );
         }
         else{
-            iret = m_ctrl[i]->SetVelocity(500000, true); // default velocity
-		    iret = m_ctrl[i]->SetVelocityOveride((int)vel );
+            // if(i==0 || i == 2){
+            if(vel >= 0.) {          
+                iret = m_ctrl[i]->SetVelocity(50000, true); // default velocity
+		        iret = m_ctrl[i]->SetVelocityOveride((int)vel );
+            }
+            else{
+                iret = m_ctrl[i]->SetVelocity(50000, false); // default velocity
+		        iret = m_ctrl[i]->SetVelocityOveride((int)vel );
+            }
         }
 	}
 

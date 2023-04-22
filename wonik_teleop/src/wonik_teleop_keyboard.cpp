@@ -52,6 +52,7 @@ class TeleopWonikKeyboard
 
 int kfd = 0;
 struct termios cooked, raw;
+int cnt = 0;
 
 void quit(int sig)
 {
@@ -108,6 +109,7 @@ void TeleopWonikKeyboard::keyboardLoop()
     switch(c)
     {
       // Walking
+    
     case KEYCODE_W:
       cmd.linear.x = walk_vel;
       dirty = true;
@@ -158,8 +160,19 @@ void TeleopWonikKeyboard::keyboardLoop()
       cmd.angular.z = - yaw_rate_run;
       dirty = true;
       break;
+
+    default:
+      cnt = 0; 
+      break;
     }
 
+    // if (cnt < 100){
+    //   cmd.linear.x = cmd.linear.x * cnt / 100.;
+    //   cmd.linear.y = cmd.linear.y * cnt / 100.;
+    //   cmd.angular.z = cmd.angular.z * cnt / 100.;
+    // }
+
+    // cnt++;
     
     if (dirty == true)
     {

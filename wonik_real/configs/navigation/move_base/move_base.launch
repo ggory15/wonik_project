@@ -29,7 +29,7 @@
     <!--rosparam file="$(find wonik_real)/configs/navigation/move_base/local_planner/teb_local_planner/costmap_converter_params.yaml" command="load" /-->
 
     <!-- WonikLocalPlanner -->
-    <param name="WonikLocalPlanner" value="wonik_local_planner/WonikLocalPlanner"/>
+    <param name="base_local_planner" value="wonik_local_planner/WonikLocalPlanner"/>
     <rosparam file="$(find wonik_real)/configs/navigation/move_base/local_planner/wonik_local_planner/wonik_planner.yaml" command="load" />
 
     <!-- Common -->

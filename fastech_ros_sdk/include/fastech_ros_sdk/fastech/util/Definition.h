@@ -11,7 +11,7 @@
 
 #define IPADDRESS "192.168.0.2"
 #define UDP_PORT 3002
-#define BUF_SIZE 1024
+#define BUF_SIZE 1024*4
 #define FMM_OK					0
 #define FMM_NOT_OPEN			1
 #define FMM_INVALID_PORT_NUM	2

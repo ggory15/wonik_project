@@ -21,7 +21,6 @@ int FastechStepWrapper::Send(){
     try{
         sendto(sock_, send_msg_, send_msg_size_, 0, (struct sockaddr*)&serv_adr_,sizeof(serv_adr_));
         syncNo_++;
-
         return FMM_OK;
     }
     catch(std::string err)
@@ -324,7 +323,7 @@ int FastechStepWrapper::SetVelocityOveride(unsigned int speed){
 		unsigned char VelocityOverride[] = { 0xAA, 0x07, 0x00, 0x00, 0x3A, 0x00, 0x00, 0x00, 0x00 };
 		VelocityOverride[2] = (unsigned char)syncNo_;
 		unsigned char spd[4];
-		UInt2UBytes(speed, spd);
+		UInt2UBytes(speed, spd);		
 		for (size_t idx = 0; idx < sizeof(spd); idx++)
 			VelocityOverride[idx + 5] = spd[idx];
 		for (size_t idx = 0; idx < sizeof(VelocityOverride); idx++)

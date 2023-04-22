@@ -27,6 +27,7 @@ private:
 	OdomPose pose;
 	Mecanum4WKinematics* kin = 0;
 	bool sendTransform = false;
+	std::string odom_tf_name = "/odom";
 
 };
 
@@ -61,6 +62,7 @@ int PlatformCtrlNode::init()
 	axisLength = axisLength /factor;
 
 	nh.param<bool>("sendTransform", sendTransform, false);
+	nh.param<std::string>("odom", odom_tf_name, "/odom");
 
 	kin->setWheelDiameter(wheelDiameter);
 	kin->setAxis1Length(axisWidth);
@@ -74,7 +76,7 @@ int PlatformCtrlNode::init()
 
 	kin->setStdDev(devX, devY, devZ, devRoll, devPitch, devYaw);
 	
-	topicPub_Odometry = nh.advertise<nav_msgs::Odometry>("/odom", 1);
+	topicPub_Odometry = nh.advertise<nav_msgs::Odometry>(odom_tf_name.c_str(), 1);
     topicSub_DriveState = nh.subscribe("/joint_states", 1, &PlatformCtrlNode::sendOdom, this);
     topicPub_DriveCommands = nh.advertise<trajectory_msgs::JointTrajectory>("/drives/joint_trajectory", 1);
 	topicSub_ComVel = nh.subscribe("/cmd_vel", 1, &PlatformCtrlNode::receiveCmd, this);
@@ -102,7 +104,7 @@ void PlatformCtrlNode::sendOdom(const sensor_msgs::JointState& js)
 	//odometry msg
 	nav_msgs::Odometry odom;
 	odom.header.stamp = js.header.stamp;
-	odom.header.frame_id = "odom";
+	odom.header.frame_id = odom_tf_name;
 	odom.child_frame_id = "base_link";
 	kin->execForwKin(js, odom, pose);
 
