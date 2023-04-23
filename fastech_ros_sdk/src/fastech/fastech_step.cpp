@@ -67,6 +67,102 @@ void FastechStepWrapper::EmptyRead(){
 		std::cout << err << std::endl;
 	}
 }
+
+void FastechStepWrapper::readThread(){
+	while (! shutdown_)
+	{		
+		try{
+			adr_sz_ = sizeof(from_adr_);
+
+			int str_len = recvfrom(sock_, recieve_msg_, sizeof(recieve_msg_), 0, (struct sockaddr*)&from_adr_, &adr_sz_);
+			if(str_len > 0){
+				unsigned char* res = reinterpret_cast<unsigned char*>(recieve_msg_);
+
+				if (str_len < 5)
+				{
+					std::cout << "size error" << std::endl;
+					std::cout << "str_len : " << str_len << std::endl;
+					std::cout << "raw: ";
+					for (int i = 0; i < str_len; i++)
+					{
+						std::cout << std::hex << (int)res[i] << " ";
+					}
+					error_cnt_ ++;
+					continue;
+				}
+				uint8_t header = res[0];
+				uint8_t length = res[1];
+				uint8_t sync_no = res[2];
+				uint8_t frame_type = res[4];
+				uint8_t comm_stat = res[5];
+
+				if (header != 0xAA)
+				{
+					std::cout << "header error" << std::endl;
+					std::cout << "header : " << header << std::endl;
+					error_cnt_ ++;
+					continue;
+				}
+
+				if (comm_stat != FMM_OK)
+				{
+					std::cout << "header : " << header << std::endl;
+					std::cout << "length : " << length << std::endl;
+					std::cout << "sync_no : " << sync_no << std::endl;
+					std::cout << "frame_type : " << frame_type << std::endl;
+					std::cout << "comm_stat : " << comm_stat << std::endl;
+					error_cnt_ ++;
+					continue;
+				}
+
+				if (str_len - 2 != length)
+				{
+					std::cout << "header : " << header << std::endl;
+					std::cout << "length : " << length << std::endl;
+					std::cout << "sync_no : " << sync_no << std::endl;
+					std::cout << "frame_type : " << frame_type << std::endl;
+					std::cout << "comm_stat : " << comm_stat << std::endl;
+					error_cnt_ ++;
+					continue;
+				}
+
+				swtich(frame_type)
+				{
+				case FAS_GetActualVel:
+					motor_vel_ = (int)UBytes2UInt(res+6);
+					std::cout << "motor_vel_ : " << motor_vel_ << std::endl;
+					std::cout << "raw: " << std::hex << (int)res[6] << " " << (int)res[7] << " " << (int)res[8] << " " << (int)res[9] << std::endl;
+					
+					break;
+				
+				case FAS_MoveVelocity:
+					break;
+
+				case FAS_VelocityOverride:
+					break;
+					
+				default:
+					break;
+				}
+				
+				// // previous cmd for direction
+				// if (send_msg_[7] == 0xFF && send_msg_[8] == 0xFF && recieve_msg_[4] == 0x55 ){
+				// 	unsigned char tmp_buf[4] = {res[sizeof(res)-2], res[sizeof(res)-1], 0xFF, 0xFF}; // cvt to minus (padding)
+				// 	motor_vel_ = (int)UBytes2UInt(tmp_buf);
+				// }
+				// else if (recieve_msg_[4]=0x55){
+				// 	unsigned char tmp_buf[4] = {res[sizeof(res)-2], res[sizeof(res)-1], 0x00, 0x00}; // cvt to plus sign (zero padding)
+				// 	motor_vel_ = (unsigned int)UBytes2UInt(tmp_buf);
+				// }
+			}
+		}
+		catch(std::string err)
+		{
+			std::cout << err << std::endl;
+		}
+	}
+	
+}
 int FastechStepWrapper::Recieve(){
     try{
 		adr_sz_ = sizeof(from_adr_);

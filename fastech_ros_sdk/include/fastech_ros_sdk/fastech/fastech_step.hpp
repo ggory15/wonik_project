@@ -7,6 +7,8 @@
 
 #include "fastech_ros_sdk/ServoOn.h"
 #include "sensor_msgs/JointState.h"
+#include <thread>
+#include <mutex>
 
 class FastechStepWrapper{
     public:
@@ -34,6 +36,7 @@ class FastechStepWrapper{
         int EmergencyStop();
         int SetVelocityOveride(unsigned int speed );
         void EmptyRead();
+        void readThread();
         // int SetVelocityEx(unsigned int speed, bool direction, bool flagoption, unsigned short accdectime);
       
         // helper function;
@@ -61,6 +64,12 @@ class FastechStepWrapper{
         int str_len_;
         socklen_t adr_sz_;
         struct sockaddr_in serv_adr_, from_adr_;
+
+        double timeout_{0.01}; // 10ms
+        bool shutdown_ {false};
+
+        unsigned long long error_cnt_ {0};
+        
 
         // Recieve Data
         int motor_vel_;
