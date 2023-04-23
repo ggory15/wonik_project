@@ -18,3 +18,4 @@ devRoll: 0.2
 devPitch: 0.2
 #stddev vel x yaw
 devYaw: 0.2
+sendTransform: False
