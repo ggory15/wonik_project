@@ -79,6 +79,7 @@ private:
 	bool is_trajectory_timeout = false;
 
 	ros::Timer m_info_timer;
+	trajectory_msgs::JointTrajectoryPoint prev_jt_;
 
 };
 #endif

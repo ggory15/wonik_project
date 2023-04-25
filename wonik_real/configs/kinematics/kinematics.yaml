@@ -21,4 +21,4 @@ devPitch: 0.447
 #stddev vel x yaw
 devYaw: 0.447
 #odomframe_name
-odom: "/odom"
+odom: "/odom1"

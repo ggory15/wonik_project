@@ -81,6 +81,10 @@ int WonikDriveNode::HandleCommunication()
     const ros::Time now = ros::Time::now();
 
     m_tCurrentTimeStamp = ros::Time::now();
+    prev_jt_.velocities.resize(4);
+
+    for (int i=0; i<4; i++)
+        prev_jt_.velocities[i] = 0.0;
 
 	// check for input timeout
 	// if ((now - m_last_trajectory_time).toSec() > m_trajectory_timeout)
@@ -155,26 +159,49 @@ void WonikDriveNode::getNewVelocitiesFromTopic(const trajectory_msgs::JointTraje
         d_point.velocities[0] *= -1.;
         d_point.velocities[2] *= -1.;
         
+
+	if (d_point.velocities[i] > 8.0)
+		d_point.velocities[i] = 8.0;
+	if (d_point.velocities[i] < -8.0)
+		d_point.velocities[i] = -8.0;
+
         double vel = RADSEC2PPS(d_point.velocities[i] * (double)m_Drives[i].gear_ratio); //rad/sec * gear_ratio = pps
-
+        double deadzone = 5000.0;
         // ROS_INFO_STREAM(vel);
-
+/*
 		if (fabs(m_Drives[i].current_vel) >= 100){
             iret = m_ctrl[i]->SetVelocityOveride((int)vel );
         }
-        else{
+        else{*/
             // if(i==0 || i == 2){
             if(vel >= 0.) {          
-                iret = m_ctrl[i]->SetVelocity(50000, true); // default velocity
-		        iret = m_ctrl[i]->SetVelocityOveride((int)vel );
+                iret = m_ctrl[i]->SetVelocity(500000, true); // default velocity
+                if (vel < deadzone)
+                    vel = 0.;
+		
+		iret = m_ctrl[i]->SetVelocityOveride((int)vel);
+
+                
+
+                // if (prev_jt_.velocities[i] >= 0.0)
+                //     iret = m_ctrl[i]->SetVelocityOveride((int)vel );
+                // else    
+                //     iret = m_ctrl[i]->SetVelocityOveride(0);
             }
             else{
-                iret = m_ctrl[i]->SetVelocity(50000, false); // default velocity
-		        iret = m_ctrl[i]->SetVelocityOveride((int)vel );
+                iret = m_ctrl[i]->SetVelocity(-500000, false); // default velocity
+                if (fabs(vel) < deadzone)
+                    vel = 0.;
+
+                iret = m_ctrl[i]->SetVelocityOveride((int)vel);
+                // if (prev_jt_.velocities[i] <= 0.0)
+                //     iret = m_ctrl[i]->SetVelocityOveride((int)vel );
+                // else    
+                //     iret = m_ctrl[i]->SetVelocityOveride(0);
             }
         }
-	}
-
+	//}
+    prev_jt_ = d_point;
 	m_last_trajectory_time = ros::Time::now();
 }
 

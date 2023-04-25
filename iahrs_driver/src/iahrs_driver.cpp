@@ -370,6 +370,14 @@ int main (int argc, char** argv)
 			imu_data_msg.orientation.z = orientation[2];
 			imu_data_msg.orientation.w = orientation[3];
 
+			// double tmp = imu_data_msg.linear_acceleration.x;
+			// imu_data_msg.linear_acceleration.y = tmp;
+			// imu_data_msg.linear_acceleration.x
+
+
+
+
+
 			// calculate measurement time
             		ros::Time measurement_time = ros::Time::now() + ros::Duration(time_offset_in_seconds);
 
@@ -382,10 +390,14 @@ int main (int argc, char** argv)
 			//Publish tf
 			if(m_bSingle_TF_option)
 			{
-				transform.setOrigin( tf::Vector3(0.0, 0.0, 0.2) );
+				transform.setOrigin( tf::Vector3(0.2, 0.0, 0.2) );
 				tf::Quaternion q;
-				q.setRPY(_pIMU_data.dEuler_angle_Roll, _pIMU_data.dEuler_angle_Pitch, _pIMU_data.dEuler_angle_Yaw);
-				transform.setRotation(q);
+				q.setRPY(_pIMU_data.dEuler_angle_Roll, _pIMU_data.dEuler_angle_Pitch, _pIMU_data.dEuler_angle_Yaw + 3.141592);
+				auto q_tf = q;
+				q_tf[0] = q[1];
+				q_tf[1] = q[0];
+				q_tf[2] = -q[2];
+				transform.setRotation(q_tf);
 				//br.sendTransform(tf::StampedTransform(transform, ros::Time::now(), "base_link", "imu_link"));
 				br.sendTransform(tf::StampedTransform(transform, ros::Time::now(), tf_prefix_ + "/base_link", tf_prefix_ + "/imu_link"));
 			}
