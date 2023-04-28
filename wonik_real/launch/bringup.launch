@@ -15,6 +15,8 @@
 
 	<include file="$(find wonik_real)/configs/sensor_fusion/robot_localization.launch"/> 
 
+	<include file="$(find wonik_real)/configs/mcu/mcu.launch"/> 
+
 	<!-- <include file="$(find wonik_real)/launch/navigation_basic_slam.launch"/> -->
 
 	
@@ -26,5 +28,5 @@
 	
 	<node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />	
 
-	<node name="rviz" pkg="rviz" type="rviz" args="-d $(find wonik_real)/configs/rviz/navigation.rviz" />		
+	<!-- <node name="rviz" pkg="rviz" type="rviz" args="-d $(find wonik_real)/configs/rviz/navigation.rviz" /> -->		
 </launch>

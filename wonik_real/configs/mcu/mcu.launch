@@ -1,0 +1,6 @@
+ <launch>
+ <node pkg="rosserial_python" type="serial_node.py" name="quribo_core" output="screen" required="false" respawn="true" respawn_delay="5"> 
+    <param name="port" value="/dev/MCU"/>
+    <param name="baud" value="57600"/>  
+ </node>
+ </launch>

@@ -33,6 +33,7 @@ void WonikDriveNode::servo_on(int i){
 
 
     m_ctrl[i]->Reset();
+    m_ctrl[i]->SetParameter(PARAM_POS_TRACKING_LIMIT, 10000000);
     m_ctrl[i]->ServoEnable(true);
     m_Drives[i].servo_on = true;
 
@@ -58,15 +59,16 @@ int WonikDriveNode::init()
     }
 
     std::vector<std::thread> threads;
-
     threads.emplace_back(&WonikDriveNode::servo_on, this, 0); // motor 1 servo on
     threads.emplace_back(&WonikDriveNode::servo_on, this, 1);
     threads.emplace_back(&WonikDriveNode::servo_on, this, 2);
     threads.emplace_back(&WonikDriveNode::servo_on, this, 3);
- 
+
     for (auto &thread : threads)
         thread.join();
     
+    // m_ctrl[0]->enable_debug_ = true;
+
     topicPub_drives = n.advertise<sensor_msgs::JointState>("/joint_states", 1);
     topicSub_drives = n.subscribe("/drives/joint_trajectory", 1, &WonikDriveNode::getNewVelocitiesFromTopic, this);
 
@@ -127,9 +129,9 @@ void WonikDriveNode::PublishJointStates()
     int iret, iret2;
 	for (int i = 0; i < 4; i++)
 	{   
-        m_ctrl[i]->EmptyRead();
+        // m_ctrl[i]->EmptyRead();
         iret2 = m_ctrl[i]->GetActualVel();
-        iret2 = m_ctrl[i]->Recieve();
+        // iret2 = m_ctrl[i]->Recieve();
         
         state.name[i] = m_Drives[i].sName.c_str();
         state.velocity[i] = PPS2RADSEC(m_ctrl[i]->get_velocity()) / (double)m_Drives->gear_ratio;	
@@ -139,7 +141,7 @@ void WonikDriveNode::PublishJointStates()
     state.velocity[0] *= -1.;
     state.velocity[2] *= -1.;
 
-    if (iret == FMM_OK && iret2 == FMM_OK)
+    if (iret2 == FMM_OK)
 	    topicPub_drives.publish(state);
 }
 
@@ -166,7 +168,7 @@ void WonikDriveNode::getNewVelocitiesFromTopic(const trajectory_msgs::JointTraje
 		d_point.velocities[i] = -8.0;
 
         double vel = RADSEC2PPS(d_point.velocities[i] * (double)m_Drives[i].gear_ratio); //rad/sec * gear_ratio = pps
-        double deadzone = 5000.0;
+        double deadzone = 10000.0;
         // ROS_INFO_STREAM(vel);
 /*
 		if (fabs(m_Drives[i].current_vel) >= 100){
@@ -175,11 +177,19 @@ void WonikDriveNode::getNewVelocitiesFromTopic(const trajectory_msgs::JointTraje
         else{*/
             // if(i==0 || i == 2){
             if(vel >= 0.) {          
-                iret = m_ctrl[i]->SetVelocity(500000, true); // default velocity
+                if (m_ctrl[i]->get_velocity() <= 0)
+                {
+                    iret = m_ctrl[i]->SetVelocityOveride(0);
+                    iret = m_ctrl[i]->SetVelocityOveride(0);
+                    iret = m_ctrl[i]->SetVelocityOveride(0);
+                    iret = m_ctrl[i]->SetVelocityOveride(0);
+                    iret = m_ctrl[i]->SetVelocity(500000, true); // default velocity
+                    // iret = m_ctrl[i]->SetVelocity(500000, true); // default velocity
+                }
                 if (vel < deadzone)
                     vel = 0.;
 		
-		iret = m_ctrl[i]->SetVelocityOveride((int)vel);
+		        iret = m_ctrl[i]->SetVelocityOveride((int)vel);
 
                 
 
@@ -189,7 +199,15 @@ void WonikDriveNode::getNewVelocitiesFromTopic(const trajectory_msgs::JointTraje
                 //     iret = m_ctrl[i]->SetVelocityOveride(0);
             }
             else{
-                iret = m_ctrl[i]->SetVelocity(-500000, false); // default velocity
+                if (m_ctrl[i]->get_velocity() >= 0)
+                {
+                    iret = m_ctrl[i]->SetVelocityOveride(0);
+                    iret = m_ctrl[i]->SetVelocityOveride(0);
+                    iret = m_ctrl[i]->SetVelocityOveride(0);
+                    iret = m_ctrl[i]->SetVelocityOveride(0);
+                    iret = m_ctrl[i]->SetVelocity(500000, false); // default velocity
+                }
+                // iret = m_ctrl[i]->SetVelocity(-500000, false); // default velocity
                 if (fabs(vel) < deadzone)
                     vel = 0.;
 
@@ -201,7 +219,6 @@ void WonikDriveNode::getNewVelocitiesFromTopic(const trajectory_msgs::JointTraje
             }
         }
 	//}
-    prev_jt_ = d_point;
 	m_last_trajectory_time = ros::Time::now();
 }
 

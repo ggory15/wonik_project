@@ -8,6 +8,11 @@
 #include "fastech_ros_sdk/ServoOn.h"
 #include "sensor_msgs/JointState.h"
 
+#include <thread>
+#include <mutex>
+
+#define DEBUG_PRINT(X) if (enable_debug_) { X }
+
 class FastechStepWrapper{
     public:
         FastechStepWrapper(const std::string & motor_ip, const int & port);
@@ -34,6 +39,7 @@ class FastechStepWrapper{
         int EmergencyStop();
         int SetVelocityOveride(unsigned int speed );
         void EmptyRead();
+        void readThread();
         // int SetVelocityEx(unsigned int speed, bool direction, bool flagoption, unsigned short accdectime);
       
         // helper function;
@@ -46,7 +52,8 @@ class FastechStepWrapper{
         int get_velocity(){
             return motor_vel_;
         }
-        
+
+        bool enable_debug_ {false};        
 
     private:
         std::string motor_ip_;
@@ -62,9 +69,21 @@ class FastechStepWrapper{
         socklen_t adr_sz_;
         struct sockaddr_in serv_adr_, from_adr_;
 
+        std::mutex socket_mutex_;
+        std::thread socket_read_thread_;
+
         // Recieve Data
         int motor_vel_;
 
+        double timeout_{0.01}; // 10ms
+        bool shutdown_ {false};
+
+        unsigned long long error_cnt_ {0};
+
+        std::chrono::time_point<std::chrono::system_clock> last_time_;
+
+
+        
 };
 
 

@@ -46,4 +46,31 @@
 #define PPS2RADSEC(x) x*STEPANGLE*60.0/360.0*0.10471975511965977
 #define RADSEC2PPS(x) x*360.0/(60.0*STEPANGLE)*9.54929658551
 
+#define FAS_VelocityOverride    0x3A
+#define FAS_MoveVelocity        0x37
+#define FAS_GetCommandPos       0x51
+#define FAS_SetActualPos        0x52
+#define FAS_GetActualPos        0x53
+#define FAS_GetActualVel        0x55
+
+#define FMP_FRAMETYPEERROR 0x80
+#define FMP_DATAERROR 0x81
+#define FMP_PACKETERROR 0x82
+
+#define FMP_RUNFAIL 0x85
+#define FMP_RESETFAIL 0x86
+#define FMP_SERVOONFAIL1 0x87
+#define FMP_SERVOONFAIL2 0x88
+#define FMP_SERVOONFAIL3 0x89
+
+#define FMP_SERVOOFF_FAIL 0x8A
+#define FMP_ROMACCESS 0x8B
+
+#define FMP_PACKETCRCERROR 0xAA
+
+#define FMM_UNKNOWN_ERROR 0xFF
+
+#define PARAM_POS_TRACKING_LIMIT 24
+
+
 #endif

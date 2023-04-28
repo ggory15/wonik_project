@@ -1,9 +1,9 @@
 #robot's geometric parameters:
 
 # tuning factor
-pacticalFactor: 1.15
+pacticalFactor: 0.955
 #Diameter of std. mecanum wheel
-wheelDiameter: 0.152
+wheelDiameter: 0.17275 # 0.152
 #Length of the mobile robot from wheel center to wheel center
 robotLength: 0.6 # 0.600
 #Width from wheel center to wheel center

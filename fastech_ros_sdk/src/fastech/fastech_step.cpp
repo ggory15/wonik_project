@@ -4,22 +4,29 @@ using namespace std;
 FastechStepWrapper::FastechStepWrapper(const std::string & motor_ip, const int & port){
     motor_ip_ = motor_ip;
     port_ = port;
+	last_time_ = std::chrono::system_clock::now();
 }
 
 int FastechStepWrapper::Connect(){
+	socket_mutex_.lock();
     sock_ = socket(PF_INET, SOCK_DGRAM, 0);
-   if(sock_==-1){
-     return FMM_CONNECT_ERROR;
-   }
-   memset(&serv_adr_, 0, sizeof(serv_adr_));
-   serv_adr_.sin_family=AF_INET;
-   serv_adr_.sin_addr.s_addr=inet_addr(motor_ip_.data());
-   serv_adr_.sin_port=htons(port_);
-   return FMM_OK;
+	socket_mutex_.unlock();
+	if(sock_==-1){
+		return FMM_CONNECT_ERROR;
+	}
+	memset(&serv_adr_, 0, sizeof(serv_adr_));
+	serv_adr_.sin_family=AF_INET;
+	serv_adr_.sin_addr.s_addr=inet_addr(motor_ip_.data());
+	serv_adr_.sin_port=htons(port_);
+	std::cout << "###### CONNECT thread on ######" << std::endl;
+	socket_read_thread_ = std::thread(&FastechStepWrapper::readThread, this);
+	return FMM_OK;
 }
 int FastechStepWrapper::Send(){
     try{
+		socket_mutex_.lock();
         sendto(sock_, send_msg_, send_msg_size_, 0, (struct sockaddr*)&serv_adr_,sizeof(serv_adr_));
+		socket_mutex_.unlock();
         syncNo_++;
         return FMM_OK;
     }
@@ -53,8 +60,8 @@ int FastechStepWrapper::Unpack(unsigned char* recv_data,unsigned char& comm_stat
         return FMM_PACKET_UNPACK_ERROR;
    }
 }
-void FastechStepWrapper::EmptyRead(){
 
+void FastechStepWrapper::EmptyRead(){
 	try{
 		do{
 			adr_sz_ = sizeof(from_adr_);
@@ -67,6 +74,140 @@ void FastechStepWrapper::EmptyRead(){
 		std::cout << err << std::endl;
 	}
 }
+
+void FastechStepWrapper::readThread(){
+	std::cout << "read thread on" << std::endl;
+	DEBUG_PRINT(std::cout << "read thread on22" << std::endl;)
+	while (! shutdown_)
+	{		
+		try{
+			adr_sz_ = sizeof(from_adr_);
+			
+			bool r = socket_mutex_.try_lock();
+			if (r == false)
+			{
+				continue;
+			}
+			int str_len = recvfrom(sock_, recieve_msg_, sizeof(recieve_msg_), MSG_DONTWAIT, (struct sockaddr*)&from_adr_, &adr_sz_);
+			socket_mutex_.unlock();
+
+			if(str_len > 0){
+				unsigned char* res = reinterpret_cast<unsigned char*>(recieve_msg_);
+				
+				DEBUG_PRINT(std::cout << "======================================================" << std::endl;)
+				if (str_len < 5)
+				{
+					DEBUG_PRINT(std::cout << "size error" << std::endl;)
+					DEBUG_PRINT(std::cout << "str_len : " << str_len << std::endl;)
+					DEBUG_PRINT(std::cout << "raw: ";)
+					for (int i = 0; i < str_len; i++)
+					{
+						DEBUG_PRINT(std::cout << std::hex << (int)res[i] << " ";)
+					}
+					error_cnt_ ++;
+					continue;
+				}
+				int16_t header = res[0];
+				int16_t length = res[1];
+				int16_t sync_no = res[2];
+				int16_t frame_type = res[4];
+				int16_t comm_stat = res[5];
+				
+				DEBUG_PRINT(std::cout << "header : " << std::hex <<  header << std::endl;)
+				DEBUG_PRINT(std::cout << "length : " << std::hex <<  length << std::endl;)
+				DEBUG_PRINT(std::cout << "sync_no : " << std::hex <<  sync_no << std::endl;)
+				DEBUG_PRINT(std::cout << "frame_type : " << std::hex <<  frame_type << std::endl;)
+				DEBUG_PRINT(std::cout << "comm_stat : " << std::hex <<  comm_stat << std::endl;)
+
+
+				if (header != 0xAA)
+				{
+					DEBUG_PRINT(std::cout << "header error" << std::endl;)
+					DEBUG_PRINT(std::cout << std::hex <<  "header : " << header << std::endl;)
+					error_cnt_ ++;
+					continue;
+				}
+
+				if (comm_stat != FMM_OK)
+				{
+					std::cout << "======================================================" << std::endl;
+					std::cout << "RUN FAILED" << std::endl;
+
+					std::cout << "header : " << std::hex <<  header << std::endl;
+					std::cout << "length : " << std::hex <<  length << std::endl;
+					std::cout << "sync_no : " << std::hex <<  sync_no << std::endl;
+					std::cout << "frame_type : " << std::hex <<  frame_type << std::endl;
+					std::cout << "comm_stat : " << std::hex <<  comm_stat << std::endl;
+					if (length >= 4)
+					{
+						std::cout << "raw: " << std::hex << (int)res[6] << std::endl;
+					}
+					
+					// ServoEnable(false);
+					// Reset();
+					// ServoEnable(true);
+					// SetVelocity(0,false);
+
+					// std::
+					error_cnt_ ++;
+
+					// if ()
+					continue;
+				}
+
+				if (str_len - 2 != length)
+				{
+					// DEBUG_PRINT(std::cout << "header : " << std::hex <<  header << std::endl;)
+					// DEBUG_PRINT(std::cout << "length : " << std::hex <<  length << std::endl;)
+					// DEBUG_PRINT(std::cout << "sync_no : " << std::hex <<  sync_no << std::endl;)
+					// DEBUG_PRINT(std::cout << "frame_type : " << std::hex <<  frame_type << std::endl;)
+					// DEBUG_PRINT(std::cout << "comm_stat : " << std::hex <<  comm_stat << std::endl;)
+					error_cnt_ ++;
+					continue;
+				}
+
+				switch (frame_type)
+				{
+				case FAS_GetActualVel:
+					motor_vel_ = (int)UBytes2UInt(res+6);
+					DEBUG_PRINT(std::cout << "motor_vel_ : " << std::dec <<  motor_vel_ << std::endl;)
+					DEBUG_PRINT(std::cout << "raw: " << std::hex << (int)res[6] << " " << (int)res[7] << " " << (int)res[8] << " " << (int)res[9] << std::endl;)
+
+					break;
+
+				case FAS_MoveVelocity:
+					break;
+
+				case FAS_VelocityOverride:
+					break;
+
+				default:
+					break;
+				}
+
+				// // previous cmd for direction
+				// if (send_msg_[7] == 0xFF && send_msg_[8] == 0xFF && recieve_msg_[4] == 0x55 ){ // cvt to minus (padding)
+				// 	motor_vel_ = (int)UBytes2UInt(tmp_buf);
+				// }
+				// else if (recieve_msg_[4]=0x55){
+				// 	unsigned char tmp_buf[4] = {res[sizeof(res)-2], res[sizeof(res)-1], 0x00, 0x00}; // cvt to plus sign (zero padding)
+				// 	motor_vel_ = (unsigned int)UBytes2UInt(tmp_buf);
+				// }
+			}
+				// 	unsigned char tmp_buf[4] = {res[sizeof(res)-2], res[sizeof(res)-1], 0xFF, 0xFF};
+			else
+			{
+    			std::this_thread::sleep_for(std::chrono::milliseconds(1)); // check every 1 ms
+			}
+		}
+		catch(std::string err)
+		{
+			DEBUG_PRINT(std::cout << err << std::endl;)
+		}
+	}
+
+}
+
 int FastechStepWrapper::Recieve(){
     try{
 		adr_sz_ = sizeof(from_adr_);
@@ -262,6 +403,9 @@ int FastechStepWrapper::ServoEnable(bool enable){
 	}
 }
 int FastechStepWrapper::SetVelocity(unsigned int speed, bool direction){
+	std::chrono::time_point<std::chrono::system_clock> now = std::chrono::system_clock::now();
+	// auto dt = = std::chrono::duration_cast<std::chrono::milliseconds>(last_time_ - now);
+	// if (dt > )
     try{
 		unsigned char MoveVelocity[] = { 0xAA, 0x08, 0x00, 0x00, 0x37, 0x00, 0x00, 0x00, 0x00, 0x00 };
 		MoveVelocity[2] = (unsigned char)syncNo_;

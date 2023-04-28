@@ -2,7 +2,7 @@
 
 <launch>
 
-  <arg name="env_map" default="" />
+  <arg name="env_map" default="$(find wonik_real)/maps/mymap.yaml" />
 
   <!-- MAP SERVER -->
   <node name="map_server" pkg="map_server" type="map_server" args="$(arg env_map)">
@@ -10,14 +10,13 @@
   
   <!-- Topic Relays -->
   
-  <!-- <node pkg="topic_tools" type="relay" ns="/lidar_1" name="relay" args="/lidar_1/scan_filtered /scan" />
-  <node pkg="topic_tools" type="relay" ns="/lidar_2" name="relay" args="/lidar_2/scan_filtered /scan" /> -->
+  <node pkg="topic_tools" type="relay" ns="/lidar_1" name="relay" args="/lidar_1/scan /scan" />
+  <node pkg="topic_tools" type="relay" ns="/lidar_2" name="relay" args="/lidar_2/scan /scan" />
 
   <!-- Localization Node -->
   <node pkg="wonik_localization" type="wonik_localization_node" name="wonik_localization_node" output="screen">
 
     <rosparam file="$(find wonik_real)/configs/navigation/wonik_localization/wonik_localization.yaml" command="load" />
-
   </node>
 
 </launch>

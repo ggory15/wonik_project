@@ -1,15 +1,15 @@
 <?xml version="1.0"?>
 
 <launch>
-  <arg name="env_map" default="" />
+  <arg name="env_map" default="$(find wonik_real)/maps/mymap.yaml" />
 
   <!-- MAP SERVER -->
   <node name="map_server" pkg="map_server" type="map_server" args="$(arg env_map)">
   </node>
 
   <!-- Topic Relays -->
-  <node pkg="topic_tools" type="relay" ns="/lidar_1" name="relay" args="/lidar_1/scan_filtered /scan" />
-  <node pkg="topic_tools" type="relay" ns="/lidar_2" name="relay" args="/lidar_2/scan_filtered /scan" />
+  <node pkg="topic_tools" type="relay" ns="/lidar_1" name="relay" args="/lidar_1/scan" />
+  <node pkg="topic_tools" type="relay" ns="/lidar_2" name="relay" args="/lidar_2/scan" />
 
   <!-- AMCL Node -->
   <node pkg="amcl" type="amcl" name="amcl">
