@@ -17,7 +17,7 @@ int main(int argc, char **argv)
 			return 1;
 
 		double request_rate;   // [1/s]
-		node.n.param("request_rate", request_rate, 10.0); // Hz
+		node.n.param("request_rate", request_rate, 50.0); // Hz
 
 		// frequency of publishing states (cycle time)
 		ros::Rate rate(request_rate);

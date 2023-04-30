@@ -34,6 +34,11 @@ void WonikDriveNode::servo_on(int i){
 
     m_ctrl[i]->Reset();
     m_ctrl[i]->SetParameter(PARAM_POS_TRACKING_LIMIT, 10000000);
+    m_ctrl[i]->SetParameter(PARAM_RUN_CURRENT, 15);
+    m_ctrl[i]->SetParameter(PARAM_STOP_CURRENT, 8);
+    m_ctrl[i]->SetParameter(PARAM_AXIS_ACC_TIME, 3000);
+    m_ctrl[i]->SetParameter(PARAM_AXIS_DEC_TIME, 3000);
+    
     m_ctrl[i]->ServoEnable(true);
     m_Drives[i].servo_on = true;
 
@@ -162,10 +167,10 @@ void WonikDriveNode::getNewVelocitiesFromTopic(const trajectory_msgs::JointTraje
         d_point.velocities[2] *= -1.;
         
 
-	if (d_point.velocities[i] > 8.0)
-		d_point.velocities[i] = 8.0;
-	if (d_point.velocities[i] < -8.0)
-		d_point.velocities[i] = -8.0;
+	if (d_point.velocities[i] > 13.0)
+		d_point.velocities[i] = 13.0;
+	if (d_point.velocities[i] < -13.0)
+		d_point.velocities[i] = -13.0;
 
         double vel = RADSEC2PPS(d_point.velocities[i] * (double)m_Drives[i].gear_ratio); //rad/sec * gear_ratio = pps
         double deadzone = 10000.0;
@@ -183,7 +188,7 @@ void WonikDriveNode::getNewVelocitiesFromTopic(const trajectory_msgs::JointTraje
                     iret = m_ctrl[i]->SetVelocityOveride(0);
                     iret = m_ctrl[i]->SetVelocityOveride(0);
                     iret = m_ctrl[i]->SetVelocityOveride(0);
-                    iret = m_ctrl[i]->SetVelocity(500000, true); // default velocity
+                    iret = m_ctrl[i]->SetVelocity(65536, true); // default velocity
                     // iret = m_ctrl[i]->SetVelocity(500000, true); // default velocity
                 }
                 if (vel < deadzone)
@@ -205,7 +210,7 @@ void WonikDriveNode::getNewVelocitiesFromTopic(const trajectory_msgs::JointTraje
                     iret = m_ctrl[i]->SetVelocityOveride(0);
                     iret = m_ctrl[i]->SetVelocityOveride(0);
                     iret = m_ctrl[i]->SetVelocityOveride(0);
-                    iret = m_ctrl[i]->SetVelocity(500000, false); // default velocity
+                    iret = m_ctrl[i]->SetVelocity(65536, false); // default velocity
                 }
                 // iret = m_ctrl[i]->SetVelocity(-500000, false); // default velocity
                 if (fabs(vel) < deadzone)

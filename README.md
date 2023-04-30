@@ -14,3 +14,13 @@ roslaunch wonik_simulation simulation.launch
 
 ## For real robot
 roslaunch wonik_real bringup.launch
+
+## Save map
+rosrun map_server map_saver -f mymap
+rm $HOME/wonik_ws/src/wonik_project/wonik_real/maps/mymap.*
+mv mymap.* $HOME/wonik_ws/src/wonik_project/wonik_real/maps
+
+## Check Accuracy of Movebase
+rosrun tf tf_echo /map /base_link
+rostopic echo /move_base/goal
+
