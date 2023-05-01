@@ -30,6 +30,7 @@ class FastechStepWrapper{
         int GetParameter(unsigned int paramno, unsigned int paramval );
         int SaveAllParam();
         int GetActualVel();
+        int ClearPosition();
         int GetMotionStatus();
         int GetAlarmLogs();
         int ResetAlarmLogs();

@@ -79,6 +79,8 @@ private:
 	double m_emergency_acc_lim_x = 0;	// [m/s^2]
 	double m_robot_direction = 1.0;
 
+	double m_acc_tmp = 0.0;
+
 	bool m_enable_software_stop = true; 
 	bool m_differential_drive = false;
 	bool m_constrain_final = false;

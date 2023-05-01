@@ -65,6 +65,7 @@
         "memory_resource": "cpp",
         "optional": "cpp",
         "random": "cpp",
-        "set": "cpp"
+        "set": "cpp",
+        "regex": "cpp"
     }
 }

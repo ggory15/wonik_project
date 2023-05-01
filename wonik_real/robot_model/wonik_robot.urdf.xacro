@@ -10,6 +10,8 @@
   <!-- SENSORS --> 
   <xacro:include filename="$(find wonik_real)/robot_model/urdf/wonik_robot_xacros/sick_S561.xacro" />
 
+  <xacro:include filename="$(find wonik_real)/robot_model/urdf/wonik_robot_xacros/d435.xacro" />
+
   <!-- USS and IMU - Comment/Uncomment if required  -->
 
   <xacro:include filename="$(find wonik_real)/robot_model/urdf/wonik_robot_xacros/imu.xacro" />
@@ -52,6 +54,15 @@
   <xacro:sick_laser_v0 name="lidar_2" parent="base_link" ros_topic="lidar_2/scan">
     <origin xyz="-0.463193 -0.320743 0.18904" rpy="3.14 0 3.925" />
   </xacro:sick_laser_v0>
+
+  <xacro:camera_v0 name="cam_1" parent="base_link" ros_topic="cam_1/scan">
+    <origin xyz="0.463193 0.038242 0.53424" rpy="1.5707 -0.174533 0.3054326" />
+  </xacro:camera_v0>
+
+  <xacro:camera_v0 name="cam_2" parent="base_link" ros_topic="cam_2/scan">
+    <origin xyz="0.463193 -0.038242 0.53424" rpy="1.5707 -0.174533 -0.3054326" />
+  </xacro:camera_v0>
+
 
      <!--+++++++++++++++++++ IMU ++++++++++++++++++++++++-->
  <!-- Comment or uncomment based on your requirement -->

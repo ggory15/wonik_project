@@ -22,14 +22,12 @@
     <!-- rosparam file="$(find wonik_simulation)/config/mpo_700/move_base/local_planner/eband_local_planner/eband_planner.yaml" command="load" /-->
 
     <!-- Teb -->
-    <!--param name="base_local_planner" value="teb_local_planner/TebLocalPlannerROS"/>
-    <rosparam file="$(find wonik_real)/configs/navigation/move_base/local_planner/teb_local_planner/teb_planner.yaml" command="load" /-->
-
-    <!-- LOAD COSTMAP_CONVERTER PARAMETERS HERE -->
-    <!--rosparam file="$(find wonik_real)/configs/navigation/move_base/local_planner/teb_local_planner/costmap_converter_params.yaml" command="load" /-->
+    <!-- <param name="base_local_planner" value="teb_local_planner/TebLocalPlannerROS"/>
+    <rosparam file="$(find wonik_real)/configs/navigation/move_base/local_planner/teb_local_planner/teb_planner.yaml" command="load" />
+    <rosparam file="$(find wonik_real)/configs/navigation/move_base/local_planner/teb_local_planner/costmap_converter_params.yaml" command="load" /> -->
 
     <!-- WonikLocalPlanner -->
-    <param name="base_local_planner" value="wonik_local_planner/WonikLocalPlanner"/>
+    <param name="base_local_planner" value="wonik_local_planner/WonikLocalPlanner"/> 
     <rosparam file="$(find wonik_real)/configs/navigation/move_base/local_planner/wonik_local_planner/wonik_planner.yaml" command="load" />
 
     <!-- Common -->

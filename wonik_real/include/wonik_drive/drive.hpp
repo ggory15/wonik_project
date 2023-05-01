@@ -53,6 +53,8 @@ public:
 	// ---- Topic Callbacks ----
 	void getNewVelocitiesFromTopic(const trajectory_msgs::JointTrajectory jt);
 
+	void setJointVelocity(trajectory_msgs::JointTrajectory jt, int i);
+
 	// ---- Pubisher functions ----
 	// Motors
 	void PublishJointStates();
@@ -80,6 +82,7 @@ private:
 
 	ros::Timer m_info_timer;
 	trajectory_msgs::JointTrajectoryPoint prev_jt_;
+	sensor_msgs::JointState state;
 
 };
 #endif

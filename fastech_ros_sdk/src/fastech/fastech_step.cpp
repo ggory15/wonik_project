@@ -333,6 +333,22 @@ int FastechStepWrapper::GetActualVel(){
 		return FMM_PACKET_BUILD_ERROR;
 	}
 }
+int FastechStepWrapper::ClearPosition(){
+    try{
+		unsigned char GetActualVel[] = { 0xAA, 0x03, 0x00, 0x00, 0x56 };
+		GetActualVel[2] = (unsigned char)syncNo_;
+		for (size_t idx = 0; idx < sizeof(GetActualVel); idx++)
+			send_msg_[idx] = GetActualVel[idx];
+		send_msg_size_ = sizeof(GetActualVel);
+		this->Send();
+		return FMM_OK;
+	}
+	catch (std::string err)
+	{
+		std::cout << err << std::endl;
+		return FMM_PACKET_BUILD_ERROR;
+	}
+}
 int FastechStepWrapper::GetMotionStatus(){
     try{
 		unsigned char GetMotionStatus[] = { 0xAA, 0x03, 0x00, 0x00, 0x42 };

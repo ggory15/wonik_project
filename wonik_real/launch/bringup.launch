@@ -16,7 +16,11 @@
 	<include file="$(find wonik_real)/configs/sensor_fusion/robot_localization.launch"/> 
 
 	<include file="$(find wonik_real)/configs/mcu/mcu.launch"/> 
+	
+	<include file="$(find wonik_real)/configs/cameras/d435_1.launch"/> 
 
+	<!-- <include file="$(find wonik_real)/configs/cameras/d435_2.launch"/>  -->
+	
 	<!-- <include file="$(find wonik_real)/launch/navigation_basic_slam.launch"/> -->
 
 	

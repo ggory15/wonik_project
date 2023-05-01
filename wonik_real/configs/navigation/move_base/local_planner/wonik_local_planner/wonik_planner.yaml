@@ -28,7 +28,7 @@ WonikLocalPlanner:
   min_rot_vel : 0.1
 
   # The absolute value of the maximum translational velocity for the robot in m/s
-  max_trans_vel : 0.6
+  max_trans_vel : 0.4
 
   # The absolute value of the minimum translational velocity for the robot in m/s
   min_trans_vel : 0.1
@@ -76,7 +76,7 @@ WonikLocalPlanner:
   cost_yaw_gain : 2
 
   # Gain for final control low pass filter
-  low_pass_gain : 0.2
+  low_pass_gain : 0.5
 
   # Max cost to allow, above we slow down to min_trans_vel or even stop
   max_cost : 0.95

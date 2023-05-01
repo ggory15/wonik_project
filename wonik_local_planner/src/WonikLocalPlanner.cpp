@@ -201,14 +201,18 @@ bool WonikLocalPlanner::computeVelocityCommands(geometry_msgs::Twist& cmd_vel)
 		m_robot_direction = reverse_path >= 0.0 ? 1.0 : -1.0;
 		count++;
 		if(m_robot_direction == -1.0 && m_limits.acc_lim_x > 0.0) {
-			m_limits.acc_lim_x = -1.0 * m_limits.acc_lim_x;
+			m_limits.acc_lim_x = -1.0 * m_acc_tmp;
 		} 
 
 		if(m_robot_direction == 1.0 && m_limits.acc_lim_x < 0.0) {
-			m_limits.acc_lim_x = -1.0 * m_limits.acc_lim_x;
+			m_limits.acc_lim_x = 1.0 * m_acc_tmp;
 		} 
 	}
 
+	if (m_limits.acc_lim_x > 0.0)
+	{
+		m_limits.acc_lim_x = 0.5 * m_acc_tmp;
+	}
 	// get latest local pose
 	tf2::Transform local_pose;
 	tf2::fromMsg(m_odometry->pose.pose, local_pose);
@@ -432,7 +436,7 @@ bool WonikLocalPlanner::computeVelocityCommands(geometry_msgs::Twist& cmd_vel)
 		// limit velocity when approaching an obstacle
  		if(have_obstacle && fabs(start_vel_x) > 0)
 		{
-			const double stop_accel = 0.9 * m_limits.acc_lim_x;
+			const double stop_accel = 0.5 * m_limits.acc_lim_x;
 			const double stop_time = sqrt(2 * fmax(obstacle_dist, 0) / stop_accel);
 			const double max_vel_x = stop_accel * stop_time;
 
@@ -777,13 +781,14 @@ void WonikLocalPlanner::initialize(std::string name, tf2_ros::Buffer* tf, costma
 	m_max_goal_dist = 		private_nh.param<double>("max_goal_dist", 0.5);
 	m_max_backup_dist = 	private_nh.param<double>("max_backup_dist", m_differential_drive ? 0.1 : 0.0);
 	m_min_stop_dist = 		private_nh.param<double>("min_stop_dist", 0.5);
-	m_emergency_acc_lim_x = private_nh.param<double>("emergency_acc_lim_x", m_limits.acc_lim_x * 4);
+	m_emergency_acc_lim_x = private_nh.param<double>("emergency_acc_lim_x", m_limits.acc_lim_x * 1.);
 	m_enable_software_stop = private_nh.param<bool>("enable_software_stop", true);
 	m_allow_reversing = private_nh.param<bool>("allow_reversing", false);
 
 	m_tf = tf;
 	m_cost_map = costmap_ros;
 	m_base_frame = costmap_ros->getBaseFrameID();
+	m_acc_tmp = m_limits.acc_lim_x;
 
 	m_odom_sub = nh.subscribe<nav_msgs::Odometry>("/odom", 1, boost::bind(&WonikLocalPlanner::odomCallback, this, _1));
 
