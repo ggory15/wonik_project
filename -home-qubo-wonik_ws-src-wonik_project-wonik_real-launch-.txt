@@ -1,1 +1,0 @@
-/home/qubo/wonik_ws/src/wonik_project/wonik_real/launch/rviz.launch

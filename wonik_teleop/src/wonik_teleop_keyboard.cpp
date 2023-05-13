@@ -26,6 +26,7 @@ class TeleopWonikKeyboard
   private:
   double walk_vel, run_vel, yaw_rate, yaw_rate_run;
   geometry_msgs::Twist cmd;
+  int cnt = 0;
 
   ros::NodeHandle n_;
   ros::Publisher vel_pub_;
@@ -42,6 +43,7 @@ class TeleopWonikKeyboard
     n_private.param("run_vel", run_vel, 1.0);
     n_private.param("yaw_rate", yaw_rate, 1.0);
     n_private.param("yaw_run_rate", yaw_rate_run, 1.5);
+    cnt = 0;
 
   }
   
@@ -52,7 +54,7 @@ class TeleopWonikKeyboard
 
 int kfd = 0;
 struct termios cooked, raw;
-int cnt = 0;
+
 
 void quit(int sig)
 {
@@ -166,13 +168,15 @@ void TeleopWonikKeyboard::keyboardLoop()
       break;
     }
 
-    // if (cnt < 100){
-    //   cmd.linear.x = cmd.linear.x * cnt / 100.;
-    //   cmd.linear.y = cmd.linear.y * cnt / 100.;
-    //   cmd.angular.z = cmd.angular.z * cnt / 100.;
+    // if (cnt < 50){
+    //   // cmd.linear.x = cmd.linear.x * cnt / 100.;
+    //   // cmd.linear.y = cmd.linear.y * cnt / 100.;
+    //   cmd.angular.z = cmd.angular.z  - cnt / 100. * 0.3;
     // }
-
-    // cnt++;
+    // else{
+    //   cnt = 0;
+    // }
+    cnt++;
     
     if (dirty == true)
     {

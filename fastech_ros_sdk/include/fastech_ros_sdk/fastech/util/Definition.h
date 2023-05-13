@@ -77,7 +77,8 @@
 #define PARAM_AXIS_DEC_TIME 4
 #define PARAM_POS_GAIN 22
 #define PARAM_POS_OVERFLOW_LIMIT 28
-
+#define PARAM_SPEED_OVERRIDE 5
+#define PARAM_PULSE 0
 
 
 #endif

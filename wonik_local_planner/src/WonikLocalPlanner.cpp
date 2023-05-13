@@ -211,7 +211,7 @@ bool WonikLocalPlanner::computeVelocityCommands(geometry_msgs::Twist& cmd_vel)
 
 	if (m_limits.acc_lim_x > 0.0)
 	{
-		m_limits.acc_lim_x = 0.5 * m_acc_tmp;
+		m_limits.acc_lim_x = 1.0 * m_acc_tmp;
 	}
 	// get latest local pose
 	tf2::Transform local_pose;
@@ -781,7 +781,7 @@ void WonikLocalPlanner::initialize(std::string name, tf2_ros::Buffer* tf, costma
 	m_max_goal_dist = 		private_nh.param<double>("max_goal_dist", 0.5);
 	m_max_backup_dist = 	private_nh.param<double>("max_backup_dist", m_differential_drive ? 0.1 : 0.0);
 	m_min_stop_dist = 		private_nh.param<double>("min_stop_dist", 0.5);
-	m_emergency_acc_lim_x = private_nh.param<double>("emergency_acc_lim_x", m_limits.acc_lim_x * 1.);
+	m_emergency_acc_lim_x = private_nh.param<double>("emergency_acc_lim_x", m_limits.acc_lim_x * 4.);
 	m_enable_software_stop = private_nh.param<bool>("enable_software_stop", true);
 	m_allow_reversing = private_nh.param<bool>("allow_reversing", false);
 

@@ -1,13 +1,13 @@
 WonikLocalPlanner:
 
   # The x acceleration limit of the robot in meters/sec^2
-  acc_lim_x : 0.25
+  acc_lim_x : 0.55
 
   # The y acceleration limit of the robot in meters/sec^2
-  acc_lim_y : 0.25
+  acc_lim_y : 0.55
 
   # The rotational acceleration limit of the robot in radians/sec^2
-  acc_lim_theta : 0.4
+  acc_lim_theta : 0.6
 
   # The maximum x velocity for the robot in m/s.
   max_vel_x : 0.5
@@ -28,7 +28,7 @@ WonikLocalPlanner:
   min_rot_vel : 0.1
 
   # The absolute value of the maximum translational velocity for the robot in m/s
-  max_trans_vel : 0.4
+  max_trans_vel : 0.6
 
   # The absolute value of the minimum translational velocity for the robot in m/s
   min_trans_vel : 0.1
@@ -95,3 +95,5 @@ WonikLocalPlanner:
 
   # If robot has differential drive, holonomic otherwise
   differential_drive : false
+
+  allow_reversing: false

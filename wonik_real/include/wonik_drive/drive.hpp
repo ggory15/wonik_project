@@ -77,7 +77,7 @@ private:
 	ros::Time m_last_trajectory_time;
 	
 	double m_tMotorDelay = 0;
-	double m_trajectory_timeout = 1.0;
+	double m_trajectory_timeout = 3.0;
 	bool is_trajectory_timeout = false;
 
 	ros::Timer m_info_timer;

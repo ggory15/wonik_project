@@ -36,11 +36,16 @@ void WonikDriveNode::servo_on(int i){
     m_ctrl[i]->SetParameter(PARAM_POS_TRACKING_LIMIT, 10000000);
     m_ctrl[i]->SetParameter(PARAM_RUN_CURRENT, 15);
     m_ctrl[i]->SetParameter(PARAM_STOP_CURRENT, 8);
-    m_ctrl[i]->SetParameter(PARAM_AXIS_ACC_TIME, 3000);
-    m_ctrl[i]->SetParameter(PARAM_AXIS_DEC_TIME, 3000);
-    m_ctrl[i]->SetParameter(PARAM_POS_GAIN, 0);
+    m_ctrl[i]->SetParameter(PARAM_STOP_CURRENT, 8);
+    m_ctrl[i]->SetParameter(PARAM_AXIS_ACC_TIME, 5000);
+    m_ctrl[i]->SetParameter(PARAM_AXIS_DEC_TIME, 5000);
+    m_ctrl[i]->SetParameter(PARAM_POS_GAIN, 0); //increase test +8
     m_ctrl[i]->SetParameter(PARAM_POS_OVERFLOW_LIMIT, 100000);
-    
+    m_ctrl[i]->SetParameter(PARAM_POS_OVERFLOW_LIMIT, 100000);
+    m_ctrl[i]->SetParameter(PARAM_SPEED_OVERRIDE, 100);
+    m_ctrl[i]->SetParameter(PARAM_PULSE, 3);
+    m_ctrl[i]->SetParameter(44, 0);
+
     m_ctrl[i]->ServoEnable(true);
     m_Drives[i].servo_on = true;
 
@@ -143,10 +148,11 @@ void WonikDriveNode::PublishJointStates()
         
         state.name[i] = m_Drives[i].sName.c_str();
         double vel = m_ctrl[i]->get_velocity();
-        state.velocity[i] = PPS2RADSEC(vel) / (double)m_Drives->gear_ratio;	
+        state.velocity[i] = PPS2RADSEC(vel) / (double)m_Drives->gear_ratio * 5.0;	
         m_Drives[i].current_vel = vel;
 	}
-
+    
+    // ROS_WARN_STREAM(m_ctrl[3]->get_velocity());
     state.velocity[0] *= -1.;
     state.velocity[2] *= -1.;
 
@@ -169,16 +175,16 @@ void WonikDriveNode::setJointVelocity(trajectory_msgs::JointTrajectory jt, const
     if (d_point.velocities[i] < -8.0)
         d_point.velocities[i] = -8.0;
 
-    double vel = RADSEC2PPS(d_point.velocities[i] * (double)m_Drives[i].gear_ratio); //rad/sec * gear_ratio = pps
-    double deadzone = 5000.0;
-    double acc_limit = 5001.0;
+    double vel = RADSEC2PPS(d_point.velocities[i] * (double)m_Drives[i].gear_ratio) / 5.0; //rad/sec * gear_ratio = pps
+    double deadzone = 400.0;
+    double acc_limit = 1001.0;
 
     m_ctrl[i]->ClearPosition();
-    
+
     if(vel >= 0.) {          
-        // if (m_ctrl[i]->get_velocity() <= 0)
+        if (m_ctrl[i]->get_velocity() <= 0)
         {
-            m_ctrl[i]->SetVelocity(65536, true); // default velocity
+            m_ctrl[i]->SetVelocity(65540, true); // default velocity
         }
         if (fabs(vel) < deadzone){
             vel = 0.;
@@ -186,14 +192,15 @@ void WonikDriveNode::setJointVelocity(trajectory_msgs::JointTrajectory jt, const
         m_ctrl[i]->SetVelocityOveride((int)vel);
     }
     else{
-        // if (m_ctrl[i]->get_velocity() >= 0)
+        if (m_ctrl[i]->get_velocity() >= 0)
         {
-            m_ctrl[i]->SetVelocity(65536, false); // default velocity
+            m_ctrl[i]->SetVelocity(65540, false);
         }
         if (fabs(vel) < deadzone){
             vel = 0.;                    
         }
-         m_ctrl[i]->SetVelocityOveride((int)vel);
+        m_ctrl[i]->SetVelocityOveride((int)vel);
+        //  m_ctrl[i]->SetVelocityOveride((int)vel);
 
     }
     
@@ -208,96 +215,48 @@ void WonikDriveNode::getNewVelocitiesFromTopic(const trajectory_msgs::JointTraje
 	
 
     int iret;
-    
-    std::vector<std::thread> threads_2;
-    threads_2.emplace_back(&WonikDriveNode::setJointVelocity, this, jt, 0); // motor 1 servo on
-    threads_2.emplace_back(&WonikDriveNode::setJointVelocity, this, jt, 1);
-    threads_2.emplace_back(&WonikDriveNode::setJointVelocity, this, jt, 2);
-    threads_2.emplace_back(&WonikDriveNode::setJointVelocity, this, jt, 3);
 
-    for (auto &thread : threads_2)
-        thread.join();
+    trajectory_msgs::JointTrajectoryPoint d_point = jt.points[0];
+    d_point.velocities[0] *= -1.;
+    d_point.velocities[2] *= -1.;
 
-// 	for (int i = 0; i < 4; i++)
-// 	{   
-//         d_point.velocities[0] *= -1.;
-//         d_point.velocities[2] *= -1.;
+	for (int i = 0; i < 4; i++)
+	{   
+        
         
 
-//         if (d_point.velocities[i] > 8.0)
-//             d_point.velocities[i] = 8.0;
-//         if (d_point.velocities[i] < -8.0)
-//             d_point.velocities[i] = -8.0;
+        if (d_point.velocities[i] > 8.0)
+            d_point.velocities[i] = 8.0;
+        if (d_point.velocities[i] < -8.0)
+            d_point.velocities[i] = -8.0;
 
-//         double vel = RADSEC2PPS(d_point.velocities[i] * (double)m_Drives[i].gear_ratio); //rad/sec * gear_ratio = pps
-//         double deadzone = 20000.0;
-//         double acc_limit = 5001.0;
+        double vel = RADSEC2PPS(d_point.velocities[i] * (double)m_Drives[i].gear_ratio) / 5.0; //rad/sec * gear_ratio = pps
+        double deadzone = 400.0;
+        double acc_limit = 1001.0;
 
-//         // if (vel > m_Drives[i].current_vel + acc_limit)
-//         //     vel = m_Drives[i].current_vel + acc_limit;
-//         // else if (vel <m_Drives[i].current_vel - acc_limit)
-//         //     vel = m_Drives[i].current_vel - acc_limit;
+        m_ctrl[i]->ClearPosition();
 
-//         m_ctrl[i]->ClearPosition();
-//         // ROS_INFO_STREAM(m_Drives[i].current_vel );
-//         // ROS_INFO_STREAM(vel);
-// /*
-// 		if (fabs(m_Drives[i].current_vel) >= 100){
-//             iret = m_ctrl[i]->SetVelocityOveride((int)vel );
-//         }
-//         else{*/
-//             // if(i==0 || i == 2){
-//             if(vel >= 0.) {          
-//                 if (m_ctrl[i]->get_velocity() <= 0)
-//                 {
-//                     // iret = m_ctrl[i]->SetVelocityOveride(0);
-//                     // iret = m_ctrl[i]->SetVelocityOveride(0);
-//                     // iret = m_ctrl[i]->SetVelocityOveride(0);
-//                     // iret = m_ctrl[i]->SetVelocityOveride(0);
-//                     iret = m_ctrl[i]->SetVelocity(65536, true); // default velocity
-//                     // iret = m_ctrl[i]->SetVelocity(500000, true); // default velocity
-//                 }
-//                 if (fabs(vel) < deadzone){
-//                     vel = 0.;
-//                     // iret = m_ctrl[i]->MotorStop();
-//                     // ROS_WARN_STREAM("deadzone");
-//                 }
-// 		        iret = m_ctrl[i]->SetVelocityOveride((int)vel);
-
-                
-
-//                 // if (prev_jt_.velocities[i] >= 0.0)
-//                 //     iret = m_ctrl[i]->SetVelocityOveride((int)vel );
-//                 // else    
-//                 //     iret = m_ctrl[i]->SetVelocityOveride(0);
-//             }
-//             else{
-//                 if (m_ctrl[i]->get_velocity() >= 0)
-//                 {
-//                     // iret = m_ctrl[i]->SetVelocityOveride(0);
-//                     // iret = m_ctrl[i]->SetVelocityOveride(0);
-//                     // iret = m_ctrl[i]->SetVelocityOveride(0);
-//                     // iret = m_ctrl[i]->SetVelocityOveride(0);
-//                     iret = m_ctrl[i]->SetVelocity(65536, false); // default velocity
-//                 }
-//                 // iret = m_ctrl[i]->SetVelocity(-500000, false); // default velocity
-//                 if (fabs(vel) < deadzone){
-//                     vel = 0.;
-//                     // iret = m_ctrl[i]->MotorStop();
-//                     //  ROS_WARN_STREAM("deadzone");
-//                 }
-//                 // iret = m_ctrl[i]->SetVelocityOveride(0);
-//                 // iret = m_ctrl[i]->SetVelocityOveride(0);
-//                 // iret = m_ctrl[i]->SetVelocityOveride(0);
-//                 // iret = m_ctrl[i]->SetVelocityOveride(0);
-//                 // iret = m_ctrl[i]->SetVelocity(65536, false); // default velocity
-//                 iret = m_ctrl[i]->SetVelocityOveride((int)vel);
-//                 // if (prev_jt_.velocities[i] <= 0.0)
-//                 //     iret = m_ctrl[i]->SetVelocityOveride((int)vel );
-//                 // else    
-//                 //     iret = m_ctrl[i]->SetVelocityOveride(0);
-//             }
-//         }
+        if(vel >= 0.) {          
+            if (m_ctrl[i]->get_velocity() <= 0)
+            {
+                m_ctrl[i]->SetVelocity(65540, true); // default velocity
+            }
+            if (fabs(vel) < deadzone){
+                vel = 0.;
+            }
+            m_ctrl[i]->SetVelocityOveride((int)vel);
+        }
+        else{
+            if (m_ctrl[i]->get_velocity() >= 0)
+            {
+                m_ctrl[i]->SetVelocity(65540, false);
+            }
+            if (fabs(vel) < deadzone){
+                vel = 0.;                    
+            }
+            m_ctrl[i]->SetVelocityOveride((int)vel);
+        }
+    }
 	m_last_trajectory_time = ros::Time::now();
 }
 

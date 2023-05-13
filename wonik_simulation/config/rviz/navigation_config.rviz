@@ -73,6 +73,10 @@ Visualization Manager:
           Alpha: 1
           Show Axes: false
           Show Trail: false
+        imu_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
         lidar_1_link:
           Alpha: 1
           Show Axes: false
@@ -243,6 +247,8 @@ Visualization Manager:
       Value: true
     - Class: rviz/TF
       Enabled: false
+      Filter (blacklist): ""
+      Filter (whitelist): ""
       Frame Timeout: 15
       Frames:
         All Enabled: true
@@ -280,6 +286,22 @@ Visualization Manager:
         {}
       Queue Size: 100
       Value: true
+    - Class: rviz/Marker
+      Enabled: true
+      Marker Topic: /line_markers
+      Name: Line
+      Namespaces:
+        line_extraction: true
+      Queue Size: 100
+      Value: true
+    - Class: rviz/Marker
+      Enabled: true
+      Marker Topic: /test_pos
+      Name: Marker
+      Namespaces:
+        "": true
+      Queue Size: 100
+      Value: true
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
@@ -308,7 +330,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 15.732613563537598
+      Distance: 3.7353837490081787
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -316,17 +338,17 @@ Visualization Manager:
         Value: false
       Field of View: 0.7853981852531433
       Focal Point:
-        X: 1.6272236108779907
-        Y: -2.4120798110961914
-        Z: 0.4374498724937439
+        X: -4.709260940551758
+        Y: -8.959986686706543
+        Z: 0.3259234130382538
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 1.3097965717315674
+      Pitch: 1.3547965288162231
       Target Frame: <Fixed Frame>
-      Yaw: 3.1948254108428955
+      Yaw: 2.9498252868652344
     Saved: ~
 Window Geometry:
   Displays:
@@ -344,5 +366,5 @@ Window Geometry:
   Views:
     collapsed: false
   Width: 1920
-  X: 1920
-  Y: 27
+  X: 1008
+  Y: 146

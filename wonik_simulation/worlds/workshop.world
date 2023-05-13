@@ -65,10 +65,10 @@
         </link>
       </model>
       <model name='Construction Cone_clone'>
-        <pose frame=''>-5.09952 -0.976554 0 0 -0 6e-06</pose>
+        <pose frame=''>-4.340617 -9.291543 0 0 -0 1.5732</pose>
         <scale>1 1 1</scale>
         <link name='link'>
-          <pose frame=''>-5.09952 -0.976554 0 0 -0 6e-06</pose>
+          <pose frame=''>-4.340617 -9.291543 0 0 -0 1.5732</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>1.7e-05 3e-05 9.94927 -0.32489 0.397088 -4.9e-05</acceleration>
           <wrench>1.7e-05 3e-05 9.94927 0 -0 0</wrench>
@@ -736,6 +736,7 @@
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
+      
       <light name='sun'>
         <pose frame=''>0 0 11.508 0 -0 0</pose>
       </light>
@@ -3455,8 +3456,8 @@
         <collision name='collision'>
           <geometry>
             <mesh>
-              <scale>10 10 10</scale>
-              <uri>model://construction_cone/meshes/construction_cone.dae</uri>
+              <scale>1 1 1</scale>
+              <uri>model://docker/meshes/untitled.dae</uri>
             </mesh>
           </geometry>
           <max_contacts>10</max_contacts>
@@ -3476,8 +3477,8 @@
         <visual name='visual'>
           <geometry>
             <mesh>
-              <scale>10 10 10</scale>
-              <uri>model://construction_cone/meshes/construction_cone.dae</uri>
+              <scale>1 1 1</scale>
+              <uri>model://docker/meshes/untitled.dae</uri>
             </mesh>
           </geometry>
         </visual>
@@ -3497,7 +3498,7 @@
         <enable_wind>0</enable_wind>
         <kinematic>0</kinematic>
       </link>
-      <pose frame=''>-4.94039 -1.19168 0 0 -0 0</pose>
+      <pose frame=''>-4.8372 -9.347 0 0 -0 1.5732</pose>
     </model>
     <model name='Construction Cone_clone_clone'>
       <link name='link'>
@@ -3924,6 +3925,16 @@
       <allow_auto_disable>1</allow_auto_disable>
       <pose frame=''>-4.78073 -3.34589 0 0 -0 0</pose>
     </model>
+    <model name='docker'>
+        <pose frame=''>-4.5463 -2.89682 0.451768 -1.57939 0.005995 -1.6128</pose>
+        <scale>1 1 1</scale>
+        <link name='link_1'>
+          <pose frame=''>-4.5463 -2.89682 0.451768 -1.57939 0.005995 -1.6128</pose>
+          <velocity>0 0 0 0 -0 0</velocity>
+          <acceleration>0 0 0 0 -0 0</acceleration>
+          <wrench>0 0 0 0 -0 0</wrench>
+        </link>
+      </model>
     <model name='dockin_station'>
       <link name='link_1'>
         <visual name='visual'>

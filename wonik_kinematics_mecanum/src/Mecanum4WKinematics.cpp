@@ -67,6 +67,9 @@ void Mecanum4WKinematics::execForwKin(const sensor_msgs::JointState& js, nav_msg
 		}
 	}
 
+
+	
+
 	odom.twist.twist.linear.x = move_vel_x;
 	odom.twist.twist.linear.y = move_vel_y;
 	odom.twist.twist.linear.z = 0;
