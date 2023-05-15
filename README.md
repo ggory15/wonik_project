@@ -17,11 +17,14 @@ roslaunch wonik_real bringup.launch
 
 ## Save map
 rosrun map_server map_saver -f mymap
+
 rm $HOME/wonik_ws/src/wonik_project/wonik_real/maps/mymap.*
+
 mv mymap.* $HOME/wonik_ws/src/wonik_project/wonik_real/maps
 
 ## Check Accuracy of Movebase
 rosrun tf tf_echo /map /base_link
+
 rostopic echo /move_base/goal
 
 ## For realsense
@@ -29,5 +32,7 @@ To add usb rules.
 https://raw.githubusercontent.com/IntelRealSense/librealsense/master/config/99-realsense-libusb.rules
 
 roslaunch realsense2_camera rs_camera.launch camera:=cam_1 serial_no:=233522072716 filters:=spatial,temporal,pointcloud
+
 roslaunch realsense2_camera rs_camera.launch camera:=cam_2 serial_no:=238222070999 filters:=spatial,temporal,pointcloud
+
 roslaunch realsense2_camera rs_multiple_devices.launch
