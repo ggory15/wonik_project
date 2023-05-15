@@ -21,6 +21,7 @@ LineExtractionROS::LineExtractionROS(ros::NodeHandle& nh, ros::NodeHandle& nh_lo
   {
     marker_publisher_ = nh_.advertise<visualization_msgs::Marker>("line_markers", 1);
   }
+  
 }
 
 LineExtractionROS::~LineExtractionROS()
@@ -63,12 +64,18 @@ void LineExtractionROS::loadParameters()
 
   // Parameters used by this node
   
-  std::string frame_id, scan_topic;
+  std::string input_frame_id, scan_topic, output_frame_id;
   bool pub_markers;
 
-  nh_local_.param<std::string>("frame_id", frame_id, "laser");
-  frame_id_ = frame_id;
-  ROS_DEBUG("frame_id: %s", frame_id_.c_str());
+  nh_local_.param<std::string>("input_frame_id", input_frame_id, "laser");
+  input_frame_id_ = input_frame_id;
+  ROS_DEBUG("frame_id: %s", input_frame_id_.c_str());
+
+  nh_local_.param<std::string>("output_frame_id", output_frame_id, "odom");
+  output_frame_id_ = output_frame_id;
+  ROS_DEBUG("frame_id: %s", output_frame_id.c_str());
+
+  
 
   nh_local_.param<std::string>("scan_topic", scan_topic, "scan");
   scan_topic_ = scan_topic;
@@ -147,7 +154,7 @@ void LineExtractionROS::populateLineSegListMsg(const std::vector<Line> &lines,
     line_msg.end = cit->getEnd(); 
     line_list_msg.line_segments.push_back(line_msg);
   }
-  line_list_msg.header.frame_id = frame_id_;
+  line_list_msg.header.frame_id = output_frame_id_;
   line_list_msg.header.stamp = ros::Time::now();
 }
 
@@ -165,17 +172,29 @@ void LineExtractionROS::populateMarkerMsg(const std::vector<Line> &lines,
   for (std::vector<Line>::const_iterator cit = lines.begin(); cit != lines.end(); ++cit)
   {
     geometry_msgs::Point p_start;
+    geometry_msgs::PointStamped temp_pose, trans_pose;
+
+   
     p_start.x = cit->getStart()[0];
     p_start.y = cit->getStart()[1];
     p_start.z = 0;
-    marker_msg.points.push_back(p_start);
+    
+    temp_pose.header.frame_id = input_frame_id_;
+    temp_pose.point = p_start;
+    listener_.transformPoint(output_frame_id_, temp_pose, trans_pose);
+    
+    marker_msg.points.push_back(trans_pose.point);
     geometry_msgs::Point p_end;
     p_end.x = cit->getEnd()[0];
     p_end.y = cit->getEnd()[1];
     p_end.z = 0;
-    marker_msg.points.push_back(p_end);
+
+    temp_pose.header.frame_id = input_frame_id_;
+    temp_pose.point = p_end;
+    listener_.transformPoint(output_frame_id_, temp_pose, trans_pose);
+    marker_msg.points.push_back(trans_pose.point);
   }
-  marker_msg.header.frame_id = frame_id_;
+  marker_msg.header.frame_id = output_frame_id_;
   marker_msg.header.stamp = ros::Time::now();
 }
 

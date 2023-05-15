@@ -5,4 +5,5 @@
         <include file="$(find wonik_simulation)/config/wonik_localization/wonik_localization.launch">
                 <arg name="env_map" value="$(arg loc_map_name)"/>
         </include>
+        
 </launch>

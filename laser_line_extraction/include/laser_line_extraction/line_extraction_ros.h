@@ -11,6 +11,7 @@
 #include "laser_line_extraction/LineSegmentList.h"
 #include "laser_line_extraction/line_extraction.h"
 #include "laser_line_extraction/line.h"
+#include <tf/transform_listener.h>
 
 namespace line_extraction
 {
@@ -32,8 +33,10 @@ private:
   ros::Subscriber scan_subscriber_;
   ros::Publisher line_publisher_;
   ros::Publisher marker_publisher_;
+  tf::TransformListener listener_;
+
   // Parameters
-  std::string frame_id_;
+  std::string input_frame_id_, output_frame_id_;
   std::string scan_topic_;
   bool pub_markers_;
   // Line extraction
