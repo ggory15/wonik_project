@@ -1,0 +1,24 @@
+auto_docking:
+  docking_backward: True
+  theta_theshold: 2 # degree 
+  position_theshold: 0.05 # meters
+  windows_size: 15 # filter size
+  precontact_position: 0.15 # precontact x
+
+  marker:
+    shape:       95 # v-shape degree,
+    offset:
+      x:         -0.6 # meters (goal position)
+      y:         0.0 # meters (goal position)
+      theta: 0 # degrees (not implemented)
+  
+  reach: # reaching position and orientation
+    pos:
+      x: -4.162
+      y: -7.9
+      z: 0
+    quat:
+      x: 0
+      y: 0
+      z: -0.7071
+      w: 0.7071

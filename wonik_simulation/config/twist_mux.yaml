@@ -1,0 +1,14 @@
+topics:
+- name    : nav
+  topic   : cmd_vel_nav
+  timeout : 0.5
+  priority: 10
+- name    : docking
+  topic   : cmd_vel_dock
+  timeout : 1.0
+  priority: 100
+locks:
+- name    : e_stop
+  topic   : e_stop
+  timeout : 0.0
+  priority: 255

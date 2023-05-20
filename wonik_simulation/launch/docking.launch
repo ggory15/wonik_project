@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<launch>
+<include file="$(find wonik_simulation)/launch/wonik_line_extractor.launch"/>
+
+<include file="$(find wonik_docking)/launch/auto_docking_sim.launch"/>
+</launch>
+
+<!-- docking"
+rosservice call /auto_docking "stage: 0
+individual: false
+docking: true" -->
+<!-- undocking>
+rosservice call /auto_docking "stage: 0
+individual: false
+docking: false" -->

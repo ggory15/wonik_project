@@ -9,6 +9,9 @@ Panels:
         - /LaserScan1
         - /LocalPath1
         - /GlobalPath1
+        - /TF1
+        - /TF1/Frames1
+        - /Marker1
       Splitter Ratio: 0.5
     Tree Height: 755
   - Class: rviz/Selection
@@ -246,12 +249,34 @@ Visualization Manager:
       Unreliable: false
       Value: true
     - Class: rviz/TF
-      Enabled: false
+      Enabled: true
       Filter (blacklist): ""
       Filter (whitelist): ""
       Frame Timeout: 15
       Frames:
         All Enabled: true
+        base_footprint:
+          Value: true
+        base_link:
+          Value: true
+        imu_link:
+          Value: true
+        lidar_1_link:
+          Value: true
+        lidar_2_link:
+          Value: true
+        map:
+          Value: true
+        odom:
+          Value: true
+        wonik_robot_omni_wheel_back_left_link:
+          Value: true
+        wonik_robot_omni_wheel_back_right_link:
+          Value: true
+        wonik_robot_omni_wheel_front_left_link:
+          Value: true
+        wonik_robot_omni_wheel_front_right_link:
+          Value: true
       Marker Alpha: 1
       Marker Scale: 1
       Name: TF
@@ -259,9 +284,26 @@ Visualization Manager:
       Show Axes: true
       Show Names: true
       Tree:
-        {}
+        map:
+          odom:
+            base_link:
+              base_footprint:
+                wonik_robot_omni_wheel_back_left_link:
+                  {}
+                wonik_robot_omni_wheel_back_right_link:
+                  {}
+                wonik_robot_omni_wheel_front_left_link:
+                  {}
+                wonik_robot_omni_wheel_front_right_link:
+                  {}
+              imu_link:
+                {}
+              lidar_1_link:
+                {}
+              lidar_2_link:
+                {}
       Update Interval: 0
-      Value: false
+      Value: true
     - Alpha: 1
       Axes Length: 1
       Axes Radius: 0.10000000149011612
@@ -296,7 +338,7 @@ Visualization Manager:
       Value: true
     - Class: rviz/Marker
       Enabled: true
-      Marker Topic: /test_pos
+      Marker Topic: /docking_marker
       Name: Marker
       Namespaces:
         "": true
@@ -330,7 +372,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 3.7353837490081787
+      Distance: 5.537429332733154
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -338,17 +380,17 @@ Visualization Manager:
         Value: false
       Field of View: 0.7853981852531433
       Focal Point:
-        X: -4.709260940551758
-        Y: -8.959986686706543
-        Z: 0.3259234130382538
+        X: -3.9944498538970947
+        Y: -7.4174604415893555
+        Z: 0.32584643363952637
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 1.3547965288162231
+      Pitch: 1.5697963237762451
       Target Frame: <Fixed Frame>
-      Yaw: 2.9498252868652344
+      Yaw: 0.15982486307621002
     Saved: ~
 Window Geometry:
   Displays:
@@ -367,4 +409,4 @@ Window Geometry:
     collapsed: false
   Width: 1920
   X: 1008
-  Y: 146
+  Y: 109

@@ -41,6 +41,11 @@
   <group if="$(arg docking)">
       <include file="$(find wonik_simulation)/launch/$(arg robot_type)_line_extractor.launch"/>
   </group>
+
+  <node pkg="twist_mux" type="twist_mux" name="twist_mux">
+    <rosparam command="load" file="$(find wonik_simulation)/config/twist_mux.yaml" />
+    <remap from="cmd_vel_out" to="cmd_vel"/>
+  </node>
 <!---=================================================================================================================================================================-->
 
 
