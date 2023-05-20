@@ -269,10 +269,7 @@ class Docking():
 					yaw_error = yaw_error + 3.141592
 				elif (yaw_error > 1.57):
 					yaw_error = yaw_error - 3.141592
-			
 
-			print (yaw_error)
-		
 			if math.fabs(x_error) > 0.1:
 				cmd_vel.linear.x = 0.1 * math.fabs(x_error) / x_error
 			else:
@@ -399,6 +396,29 @@ class Docking():
 	def service_callback(self, auto_docking):
 		self.client.cancel_goal()
 		docking_state = rospy.get_param('docking')
+
+		if (auto_docking.individual):
+			rospy.set_param('docking', False)
+			if (auto_docking.stage == 0):
+				if self.docking_stage == 0:
+					self.do_stage0()
+					self.docking_stage == 1
+				else:
+					rospy.loginfo("Docking step is wrong.")
+				
+			elif  (auto_docking.stage == 1):
+				if self.docking_stage == 1:
+					self.docking_stage = 2
+					self.do_stage1()
+				else:
+					rospy.loginfo("Docking step is wrong.")
+			else:
+				if self.docking_stage == 2:
+					self.do_stage2()
+					rospy.set_param('docking', True)
+
+			return "Service request received"
+		
 		if (not auto_docking.docking):
 			rospy.set_param('docking', False)
 			if (self.docking_stage == 2):
