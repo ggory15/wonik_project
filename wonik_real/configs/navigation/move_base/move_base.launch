@@ -32,7 +32,7 @@
 
     <!-- Common -->
     <rosparam file="$(find wonik_real)/configs/navigation/move_base/move_base/move_base.yaml" command="load" />
-
+    <remap from="cmd_vel"    to="cmd_vel_nav" />
   </node>
 
 </launch>

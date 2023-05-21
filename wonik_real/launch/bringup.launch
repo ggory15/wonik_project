@@ -32,5 +32,10 @@
 	
 	<node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />	
 
+	<node pkg="twist_mux" type="twist_mux" name="twist_mux">
+		<rosparam command="load" file="$(find wonik_real)/configs/twist_mux.yaml" />
+		<remap from="cmd_vel_out" to="cmd_vel"/>
+  	</node>
+
 	<!-- <node name="rviz" pkg="rviz" type="rviz" args="-d $(find wonik_real)/configs/rviz/navigation.rviz" /> -->		
 </launch>

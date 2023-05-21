@@ -3,5 +3,5 @@
 <launch>
         <include file="$(find wonik_real)/configs/navigation/wonik_localization/wonik_localization.launch"/>
         <include file="$(find wonik_real)/configs/navigation/move_base/move_base.launch"/>
-        <!-- <include file="$(find wonik_real)/configs/docking/line_extractor.launch"/>         -->
+           
 </launch>

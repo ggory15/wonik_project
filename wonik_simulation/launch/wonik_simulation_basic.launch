@@ -71,6 +71,7 @@
     <param name="run_vel" value="0.2" />
     <param name="yaw_rate" value="0.1" />
     <param name="yaw_run_rate" value="0.2" />
+    <remap from="cmd_vel"    to="cmd_vel_keyboard" />
   </node>
  </group>
 <!---=================================================================================================================================================================-->

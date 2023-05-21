@@ -1,0 +1,30 @@
+<?xml version='1.0'?>
+<launch>
+	<!-- Load Parameters -->
+	<rosparam file="$(find wonik_real)/configs/docking/config/auto_docking.yaml" />
+
+	<!-- Launch Node -->
+	<node name="auto_docking" pkg="wonik_docking" type="auto_dock_python2.py" output="screen" />
+</launch>
+
+<!-- docking"
+rosservice call /auto_docking "stage: 0
+individual: false
+docking: true" -->
+
+<!-- undocking>
+rosservice call /auto_docking "stage: 0
+individual: false
+docking: false" -->
+
+<!-- rosservice call /auto_docking "stage: 0
+individual: true
+docking: true" -->
+
+<!-- rosservice call /auto_docking "stage: 1
+individual: true
+docking: true" -->
+
+<!-- rosservice call /auto_docking "stage: 2
+individual: true
+docking: true" -->

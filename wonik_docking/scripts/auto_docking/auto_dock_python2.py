@@ -224,7 +224,7 @@ class Docking():
 	def do_stage1(self):
 		stime = rospy.Time.now()
 		line_checker = False
-		self.client.cancel_goal()
+		# self.client.cancel_goal()
 		while (stime + rospy.Duration(15.0) > rospy.Time.now()):
 			if (self.line_checker):
 				line_checker = True
@@ -298,7 +298,7 @@ class Docking():
 		return True
 	
 	def do_stage2(self):
-		self.client.cancel_goal()
+		# self.client.cancel_goal()
 		stime = rospy.Time.now()
 		line_checker = False
 		while (stime + rospy.Duration(15.0) > rospy.Time.now()):
@@ -402,16 +402,17 @@ class Docking():
 			if (auto_docking.stage == 0):
 				if self.docking_stage == 0:
 					self.do_stage0()
-					self.docking_stage == 1
+					self.docking_stage = 1
 				else:
-					rospy.loginfo("Docking step is wrong.")
+					rospy.loginfo("Step 0: Docking step is wrong.")
 				
 			elif  (auto_docking.stage == 1):
+				print (self.docking_stage == 1)
 				if self.docking_stage == 1:
 					self.docking_stage = 2
 					self.do_stage1()
 				else:
-					rospy.loginfo("Docking step is wrong.")
+					rospy.loginfo("Step 1: Docking step is wrong.")
 			else:
 				if self.docking_stage == 2:
 					self.do_stage2()
