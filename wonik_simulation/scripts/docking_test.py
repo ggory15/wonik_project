@@ -34,7 +34,7 @@ class ControlSuiteShell(cmd.Cmd):
     def __init__(self):
         cmd.Cmd.__init__(self)
         rospy.init_node('simple_docking_scenario')
-        marker_sub = rospy.Subscriber('/line_markers', Marker, self.marker_callback)
+        # marker_sub = rospy.Subscriber('/line_markers', Marker, self.marker_callback)
         self.marker_pub = rospy.Publisher('/test_pos', Marker, queue_size=1)
         self.tf_listener = tf.TransformListener()
         self.vel_pub = rospy.Publisher('cmd_vel', Twist, queue_size=1)
@@ -45,7 +45,7 @@ class ControlSuiteShell(cmd.Cmd):
         
         self.theta_thres = np.deg2rad(1)
         self.theta = np.deg2rad(95)
-        self.pos_thres = 0.01
+        self.pos_thres = 0.05
         self.points = None
         self.tf_matrix = None
         self.client = actionlib.SimpleActionClient('/move_base', MoveBaseAction)
@@ -58,6 +58,7 @@ class ControlSuiteShell(cmd.Cmd):
         self.quaternion_filtered = []
         self.map_to_base = np.array([])
         self.preposition = False
+
         # self.tf_buffer = tf2_ros.Buffer(rospy.Duration(1200.0))
 
     def sw_filter(self, data, window, size):
@@ -292,12 +293,13 @@ class ControlSuiteShell(cmd.Cmd):
         
     
     def marker_callback(self, msg):
-        # if self.tf_listener.canTransform(target_frame="map", source_frame="lidar_1_link", time=rospy.Time(0)):   
-        #     self.tf_matrix = self.tf_listener.lookupTransform(target_frame="map", source_frame="lidar_1_link", time=rospy.Time(0))
+        # if self.tf_listener.canTransform(target_frame="map", source_frame="lidar_2_link", time=rospy.Time(0)):   
+        #     self.tf_matrix = self.tf_listener.lookupTransform(target_frame="map", source_frame="lidar_2_link", time=rospy.Time(0))
 
         # res= self.tf_listener.transformPose(ps=msg.points[0], target_frame="map")
         # print(res)
-        self.map_to_base = self.tf_listener.lookupTransform('map', 'base_link', rospy.Time(0))
+ 
+        self.map_to_base = self.tf_listener.lookupTransform('map', 'base_link', rospy.Time(0), ros::Duration(1))
         
         
         self.points = msg.points
@@ -317,7 +319,7 @@ class ControlSuiteShell(cmd.Cmd):
             line2[1] = points[2*i+3].y - points[2*i+2].y
             
             thetas[i] = math.acos( (line1[0]*line2[0] + line1[1] * line2[1]) / (np.linalg.norm(line1) * np.linalg.norm(line2)))
-        
+            print (thetas)
             if (thetas[i] < np.pi / 2.0):
                 thetas[i] = np.pi - thetas[i]
             
@@ -334,7 +336,7 @@ class ControlSuiteShell(cmd.Cmd):
                         axis_theta = math.atan2( axis_vec[1], axis_vec[0])
 
                         candidate = PoseStamped()
-                        candidate.header.frame_id = "lidar_1_link"
+                        candidate.header.frame_id = "lidar_2_link"
                         candidate.pose.position.x = -(c2 -c1) / (m2 -m1)
                         candidate.pose.position.y = m1 * candidate.pose.position.x + c1
                         candidate.pose.orientation.x = 0
