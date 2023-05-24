@@ -181,7 +181,12 @@ void LineExtractionROS::populateMarkerMsg(const std::vector<Line> &lines,
     
     temp_pose.header.frame_id = input_frame_id_;
     temp_pose.point = p_start;
-    listener_.transformPoint(output_frame_id_, temp_pose, trans_pose);
+    try{
+      listener_.transformPoint(output_frame_id_, temp_pose, trans_pose);
+    }
+    catch(tf::TransformException& ex){
+
+    }
     
     marker_msg.points.push_back(trans_pose.point);
     geometry_msgs::Point p_end;
@@ -191,7 +196,12 @@ void LineExtractionROS::populateMarkerMsg(const std::vector<Line> &lines,
 
     temp_pose.header.frame_id = input_frame_id_;
     temp_pose.point = p_end;
-    listener_.transformPoint(output_frame_id_, temp_pose, trans_pose);
+    try{
+      listener_.transformPoint(output_frame_id_, temp_pose, trans_pose);
+    }
+    catch(tf::TransformException& ex){
+
+    }
     marker_msg.points.push_back(trans_pose.point);
   }
   marker_msg.header.frame_id = output_frame_id_;

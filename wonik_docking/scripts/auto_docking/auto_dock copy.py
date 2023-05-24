@@ -33,6 +33,7 @@ class Docking():
 		self.mkr_pub = rospy.Publisher('/docking_marker', Marker, queue_size=1)
 		self.vel_pub = rospy.Publisher('/cmd_vel_dock', Twist, queue_size=1)
 		self.pose_sub = rospy.Subscriber('/line_markers', Marker, self.line_callback)
+		self.odom_sub = rospy.Subscriber('/odom', Odometry, self.odom_callback)
 		self.tf_listener = tf.TransformListener()
 		self.client = actionlib.SimpleActionClient('/move_base', MoveBaseAction)
 
@@ -79,6 +80,18 @@ class Docking():
 		# euler rotation matrix
 		mat = [[cb*cr, sa*sb*cr - ca*sr, ca*sb*cr + sa*sr], [cb*sr, sa*sb*sr + ca*cr, ca*sb*sr - sa*cr], [-sb, sa*cb, ca*cb]]
 		return mat
+
+	def pure_pursuit(self):
+		v = np.zeros((3,1))
+
+		start_vel_x = self.odom.twist.twist.linear.x
+		print(start_vel_x)
+
+		return v
+
+	def odom_callback(self, msg):
+		self.odom = msg
+
 
 	# callback of line_detection
 	def line_callback(self, msg):
@@ -222,9 +235,11 @@ class Docking():
 		self.client.send_goal(self.reach_goal)
 
 	def do_stage1(self):
+		v = self.pure_pursuit()
+
 		stime = rospy.Time.now()
 		line_checker = False
-		# self.client.cancel_goal()
+		self.client.cancel_goal()
 		while (stime + rospy.Duration(15.0) > rospy.Time.now()):
 			if (self.line_checker):
 				line_checker = True
@@ -239,8 +254,9 @@ class Docking():
 		euler = euler_from_quaternion(self.map_to_base[1])
 		mat = self.mat_from_euler(euler)
 		errors = [calc_goal.position.x - self.map_to_base[0][0], calc_goal.position.y - self.map_to_base[0][1]]
-		x_error = 1.0 * mat[0][0] * errors[0] + 1.0 * mat[1][0] * errors[1]
-		y_error = 1.0 * mat[0][1] * errors[0] + 1.0 * mat[1][1] * errors[1]
+		print (errors[0], errors[1])
+		x_error = errors[0]
+		y_error = errors[1]
 		yaw_error = self.rotation_filtered[2] - euler[2]
 
 		if self.backward:
@@ -260,8 +276,8 @@ class Docking():
 			euler = euler_from_quaternion(self.map_to_base[1])
 			mat = self.mat_from_euler(euler)
 			errors = [calc_goal.position.x - self.map_to_base[0][0], calc_goal.position.y - self.map_to_base[0][1]]
-			x_error = 1.0 * mat[0][0] * errors[0] + 1.0 * mat[1][0] * errors[1]
-			y_error = 1.0 * mat[0][1] * errors[0] + 1.0 * mat[1][1] * errors[1]
+			x_error = errors[0]
+			y_error = errors[1]
 			yaw_error = self.rotation_filtered[2] - euler[2]
 			
 			if self.backward:
@@ -298,7 +314,7 @@ class Docking():
 		return True
 	
 	def do_stage2(self):
-		# self.client.cancel_goal()
+		self.client.cancel_goal()
 		stime = rospy.Time.now()
 		line_checker = False
 		while (stime + rospy.Duration(15.0) > rospy.Time.now()):
@@ -315,8 +331,8 @@ class Docking():
 		euler = euler_from_quaternion(self.map_to_base[1])
 		mat = self.mat_from_euler(euler)
 		errors = [calc_goal.position.x - self.map_to_base[0][0], calc_goal.position.y - self.map_to_base[0][1]]
-		x_error = 1.0 * mat[0][0] * errors[0] + 1.0 * mat[1][0] * errors[1]
-		y_error = 1.0 * mat[0][1] * errors[0] + 1.0 * mat[1][1] * errors[1]
+		x_error = errors[0]
+		y_error = errors[1]
 		yaw_error = self.rotation_filtered[2] - euler[2]
 
 		if self.backward:
@@ -335,8 +351,8 @@ class Docking():
 			euler = euler_from_quaternion(self.map_to_base[1])
 			mat = self.mat_from_euler(euler)
 			errors = [calc_goal.position.x - self.map_to_base[0][0], calc_goal.position.y - self.map_to_base[0][1]]
-			x_error = 1.0 * mat[0][0] * errors[0] + 1.0 * mat[1][0] * errors[1]
-			y_error = 1.0 * mat[0][1] * errors[0] + 1.0 * mat[1][1] * errors[1]
+			x_error = errors[0]
+			y_error = errors[1]
 			yaw_error = self.rotation_filtered[2] - euler[2]
 			
 			if self.backward:
@@ -402,17 +418,16 @@ class Docking():
 			if (auto_docking.stage == 0):
 				if self.docking_stage == 0:
 					self.do_stage0()
-					self.docking_stage = 1
+					self.docking_stage == 1
 				else:
-					rospy.loginfo("Step 0: Docking step is wrong.")
+					rospy.loginfo("Docking step is wrong.")
 				
 			elif  (auto_docking.stage == 1):
-				print (self.docking_stage == 1)
-				if self.docking_stage == 1:
+				if self.docking_stage == 1 or self.docking_stage == 0 :
 					self.docking_stage = 2
 					self.do_stage1()
 				else:
-					rospy.loginfo("Step 1: Docking step is wrong.")
+					rospy.loginfo("Docking step is wrong.")
 			else:
 				if self.docking_stage == 2:
 					self.do_stage2()
@@ -470,7 +485,7 @@ class Docking():
 						self.docking_stage = 2
 						rospy.loginfo("docking is done")
 					else:
-						rospy.loginfo("docking is failed")
+						rospy.loginfo("docking isfailed")
 
 			return "Service request received"
 

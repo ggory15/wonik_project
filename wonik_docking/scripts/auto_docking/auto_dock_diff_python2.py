@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 
 
 import time
@@ -33,6 +33,7 @@ class Docking():
 		self.mkr_pub = rospy.Publisher('/docking_marker', Marker, queue_size=1)
 		self.vel_pub = rospy.Publisher('/cmd_vel_dock', Twist, queue_size=1)
 		self.pose_sub = rospy.Subscriber('/line_markers', Marker, self.line_callback)
+		self.odom_sub = rospy.Subscriber('/odom', Odometry, self.odom_callback)
 		self.tf_listener = tf.TransformListener()
 		self.client = actionlib.SimpleActionClient('/move_base', MoveBaseAction)
 
@@ -79,6 +80,10 @@ class Docking():
 		# euler rotation matrix
 		mat = [[cb*cr, sa*sb*cr - ca*sr, ca*sb*cr + sa*sr], [cb*sr, sa*sb*sr + ca*cr, ca*sb*sr - sa*cr], [-sb, sa*cb, ca*cb]]
 		return mat
+
+	def odom_callback(self, msg):
+		self.odom = msg
+
 
 	# callback of line_detection
 	def line_callback(self, msg):
@@ -224,7 +229,7 @@ class Docking():
 	def do_stage1(self):
 		stime = rospy.Time.now()
 		line_checker = False
-		# self.client.cancel_goal()
+		self.client.cancel_goal()
 		while (stime + rospy.Duration(15.0) > rospy.Time.now()):
 			if (self.line_checker):
 				line_checker = True
@@ -238,6 +243,7 @@ class Docking():
 		calc_goal = self.calculate_goal(1)
 		euler = euler_from_quaternion(self.map_to_base[1])
 		mat = self.mat_from_euler(euler)
+		
 		errors = [calc_goal.position.x - self.map_to_base[0][0], calc_goal.position.y - self.map_to_base[0][1]]
 		x_error = 1.0 * mat[0][0] * errors[0] + 1.0 * mat[1][0] * errors[1]
 		y_error = 1.0 * mat[0][1] * errors[0] + 1.0 * mat[1][1] * errors[1]
@@ -255,13 +261,16 @@ class Docking():
 
 		rospy.loginfo("Go to Precontact Position.")
 		stime = rospy.Time.now()
-		while math.fabs(x_error) >= 0.01 or math.fabs(y_error) >= 0.01 or math.fabs(yaw_error) > 0.01: 
-			calc_goal = self.calculate_goal(1)
+
+		step1 = True # turn
+		step2 = False # go forward
+		step3 = False # turn
+		step4 = False
+		while not step4: 
+			# calc_goal = self.calculate_goal(1)
 			euler = euler_from_quaternion(self.map_to_base[1])
 			mat = self.mat_from_euler(euler)
 			errors = [calc_goal.position.x - self.map_to_base[0][0], calc_goal.position.y - self.map_to_base[0][1]]
-			x_error = 1.0 * mat[0][0] * errors[0] + 1.0 * mat[1][0] * errors[1]
-			y_error = 1.0 * mat[0][1] * errors[0] + 1.0 * mat[1][1] * errors[1]
 			yaw_error = self.rotation_filtered[2] - euler[2]
 			
 			if self.backward:
@@ -270,24 +279,58 @@ class Docking():
 				elif (yaw_error > 1.57):
 					yaw_error = yaw_error - 3.141592
 
-			if math.fabs(x_error) > 0.1:
-				cmd_vel.linear.x = 0.1 * math.fabs(x_error) / x_error
-			else:
-				cmd_vel.linear.x = x_error
+			if (step1):
+				
+				yaw1_error = math.acos((errors[0] * mat[0][0] + errors[1] * mat[1][0]) / math.sqrt(pow(errors[0], 2) + pow(errors[1], 2)))
+				tmp = mat[0][0] * errors[1] - mat[1][0] * errors[0]
+				yaw1_axis = math.fabs(tmp) / tmp
 
-			if math.fabs(y_error) > 0.1:
-				cmd_vel.linear.y = 0.1 * math.fabs(y_error) / y_error
-			else:
-				cmd_vel.linear.y = y_error
-			
-			if (math.fabs(yaw_error) > 0.15):
-				cmd_vel.angular.z = 0.15 * math.fabs(yaw_error) / yaw_error
-			else:
-				cmd_vel.angular.z = yaw_error
+				if (self.backward):
+					if (yaw1_axis <= 0.0):
+						yaw1_error = 3.141592 - yaw1_error
+					else:
+						yaw1_error = yaw1_error - 3.141592
+
+				if (math.fabs(yaw1_error) > 0.35):
+					cmd_vel.angular.z = 0.35 * math.fabs(yaw1_error) / yaw1_error
+				else:
+					cmd_vel.angular.z = yaw1_error 
+					
+				if (math.fabs(yaw1_error) < 0.01):
+					step1 = False
+					step2 = True
+					cmd_vel.angular.z = 0
+					print ("step1 is done")
+
+			elif (step2):
+				dist = math.sqrt(pow(errors[0], 2) + pow(errors[1], 2))
+				if self.backward:
+					dist = -dist
+
+				if math.fabs(dist) > 0.1:
+					cmd_vel.linear.x = 0.1 * math.fabs(dist) / dist
+				else:
+					cmd_vel.linear.x = dist 
+
+				if (math.fabs(dist) < 0.01):
+					step2 = False
+					step3 = True
+					cmd_vel.linear.x = 0
+					print ("step2 is done")
+			elif (step3):
+				if (math.fabs(yaw_error) > 0.15):
+					cmd_vel.angular.z = 0.15 * math.fabs(yaw_error) / yaw_error
+				else:
+					cmd_vel.angular.z = yaw_error 
+				if (math.fabs(yaw_error) < 0.01):
+					cmd_vel.angular.z = 0.0
+					step3 = False
+					step4 = True
+					print ("step3 is done")	
 
 			self.vel_pub.publish(cmd_vel)
 
-			if (stime + rospy.Duration(10.0) < rospy.Time.now()):
+			if (stime + rospy.Duration(50.0) < rospy.Time.now()):
 				break
 
 		cmd_vel.linear.x = 0
@@ -298,7 +341,7 @@ class Docking():
 		return True
 	
 	def do_stage2(self):
-		# self.client.cancel_goal()
+		self.client.cancel_goal()
 		stime = rospy.Time.now()
 		line_checker = False
 		while (stime + rospy.Duration(15.0) > rospy.Time.now()):
@@ -354,16 +397,6 @@ class Docking():
 			else:
 				cmd_vel.linear.x = x_error
 
-			if math.fabs(y_error) > 0.1:
-				cmd_vel.linear.y = 0.1 * math.fabs(y_error) / y_error
-			else:
-				cmd_vel.linear.y = y_error
-			
-			if (math.fabs(yaw_error) > 0.1):
-				cmd_vel.angular.z = 0.1 * math.fabs(yaw_error) / yaw_error
-			else:
-				cmd_vel.angular.z = yaw_error
-
 			self.vel_pub.publish(cmd_vel)
 
 			if (stime + rospy.Duration(10.0) < rospy.Time.now()):
@@ -402,17 +435,16 @@ class Docking():
 			if (auto_docking.stage == 0):
 				if self.docking_stage == 0:
 					self.do_stage0()
-					self.docking_stage = 1
+					self.docking_stage == 1
 				else:
-					rospy.loginfo("Step 0: Docking step is wrong.")
+					rospy.loginfo("Docking step is wrong.")
 				
 			elif  (auto_docking.stage == 1):
-				print (self.docking_stage == 1)
-				if self.docking_stage == 1:
+				if self.docking_stage == 1 or self.docking_stage == 0 :
 					self.docking_stage = 2
 					self.do_stage1()
 				else:
-					rospy.loginfo("Step 1: Docking step is wrong.")
+					rospy.loginfo("Docking step is wrong.")
 			else:
 				if self.docking_stage == 2:
 					self.do_stage2()
@@ -470,7 +502,7 @@ class Docking():
 						self.docking_stage = 2
 						rospy.loginfo("docking is done")
 					else:
-						rospy.loginfo("docking is failed")
+						rospy.loginfo("docking isfailed")
 
 			return "Service request received"
 

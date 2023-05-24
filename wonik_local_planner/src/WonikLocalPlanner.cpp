@@ -785,6 +785,9 @@ void WonikLocalPlanner::initialize(std::string name, tf2_ros::Buffer* tf, costma
 	m_enable_software_stop = private_nh.param<bool>("enable_software_stop", true);
 	m_allow_reversing = private_nh.param<bool>("allow_reversing", false);
 
+	// m_allow_reversing = private_nh.param<bool>("", false);
+	// m_allow_reversing = private_nh.param<bool>("", false);
+
 	m_tf = tf;
 	m_cost_map = costmap_ros;
 	m_base_frame = costmap_ros->getBaseFrameID();

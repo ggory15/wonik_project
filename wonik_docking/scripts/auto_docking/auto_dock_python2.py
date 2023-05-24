@@ -239,8 +239,8 @@ class Docking():
 		euler = euler_from_quaternion(self.map_to_base[1])
 		mat = self.mat_from_euler(euler)
 		errors = [calc_goal.position.x - self.map_to_base[0][0], calc_goal.position.y - self.map_to_base[0][1]]
-		x_error = -1.0 * mat[0][0] * errors[0] - 1.0 * mat[0][1] * errors[1]
-		y_error = -1.0 * mat[1][0] * errors[0] - 1.0 * mat[1][1] * errors[1]
+		x_error = 1.0 * mat[0][0] * errors[0] + 1.0 * mat[1][0] * errors[1]
+		y_error = 1.0 * mat[0][1] * errors[0] + 1.0 * mat[1][1] * errors[1]
 		yaw_error = self.rotation_filtered[2] - euler[2]
 
 		if self.backward:
@@ -260,8 +260,8 @@ class Docking():
 			euler = euler_from_quaternion(self.map_to_base[1])
 			mat = self.mat_from_euler(euler)
 			errors = [calc_goal.position.x - self.map_to_base[0][0], calc_goal.position.y - self.map_to_base[0][1]]
-			x_error = -1.0 * mat[0][0] * errors[0] - 1.0 * mat[0][1] * errors[1]
-			y_error = -1.0 * mat[1][0] * errors[0] - 1.0 * mat[1][1] * errors[1]
+			x_error = 1.0 * mat[0][0] * errors[0] + 1.0 * mat[1][0] * errors[1]
+			y_error = 1.0 * mat[0][1] * errors[0] + 1.0 * mat[1][1] * errors[1]
 			yaw_error = self.rotation_filtered[2] - euler[2]
 			
 			if self.backward:
@@ -315,8 +315,8 @@ class Docking():
 		euler = euler_from_quaternion(self.map_to_base[1])
 		mat = self.mat_from_euler(euler)
 		errors = [calc_goal.position.x - self.map_to_base[0][0], calc_goal.position.y - self.map_to_base[0][1]]
-		x_error = -1.0 * mat[0][0] * errors[0] - 1.0 * mat[0][1] * errors[1]
-		y_error = -1.0 * mat[1][0] * errors[0] - 1.0 * mat[1][1] * errors[1]
+		x_error = 1.0 * mat[0][0] * errors[0] + 1.0 * mat[1][0] * errors[1]
+		y_error = 1.0 * mat[0][1] * errors[0] + 1.0 * mat[1][1] * errors[1]
 		yaw_error = self.rotation_filtered[2] - euler[2]
 
 		if self.backward:
@@ -335,8 +335,8 @@ class Docking():
 			euler = euler_from_quaternion(self.map_to_base[1])
 			mat = self.mat_from_euler(euler)
 			errors = [calc_goal.position.x - self.map_to_base[0][0], calc_goal.position.y - self.map_to_base[0][1]]
-			x_error = -1.0 * mat[0][0] * errors[0] - 1.0 * mat[0][1] * errors[1]
-			y_error = -1.0 * mat[1][0] * errors[0] - 1.0 * mat[1][1] * errors[1]
+			x_error = 1.0 * mat[0][0] * errors[0] + 1.0 * mat[1][0] * errors[1]
+			y_error = 1.0 * mat[0][1] * errors[0] + 1.0 * mat[1][1] * errors[1]
 			yaw_error = self.rotation_filtered[2] - euler[2]
 			
 			if self.backward:
@@ -470,7 +470,7 @@ class Docking():
 						self.docking_stage = 2
 						rospy.loginfo("docking is done")
 					else:
-						rospy.loginfo("docking isfailed")
+						rospy.loginfo("docking is failed")
 
 			return "Service request received"
 

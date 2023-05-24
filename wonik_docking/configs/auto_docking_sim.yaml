@@ -8,13 +8,13 @@ auto_docking:
   marker:
     shape:       95 # v-shape degree,
     offset:
-      x:         -0.9 # meters (goal position)
-      y:         0.0 # meters (goal position)
+      x:         -0.8 # meters (goal position)
+      y:         -0.25 # meters (goal position)
       theta: 0 # degrees (not implemented)
   
   reach: # reaching position and orientation
     pos:
-      x: -4.162
+      x: -4.159
       y: -7.9
       z: 0
     quat:
