@@ -294,9 +294,12 @@ class Docking():
 				if (math.fabs(yaw1_error) > 0.35):
 					cmd_vel.angular.z = 0.35 * math.fabs(yaw1_error) / yaw1_error
 				else:
-					cmd_vel.angular.z = yaw1_error 
+					if (math.fabs(yaw1_error) < 0.04):
+						cmd_vel.angular.z = 0.04 * yaw1_error / math.fabs(yaw1_error)
+					else:
+						cmd_vel.angular.z = yaw1_error 
 					
-				if (math.fabs(yaw1_error) < 0.01):
+				if (math.fabs(yaw1_error) < 0.02):
 					step1 = False
 					step2 = True
 					cmd_vel.angular.z = 0
@@ -312,7 +315,7 @@ class Docking():
 				else:
 					cmd_vel.linear.x = dist 
 
-				if (math.fabs(dist) < 0.01):
+				if (math.fabs(dist) < 0.03):
 					step2 = False
 					step3 = True
 					cmd_vel.linear.x = 0
@@ -321,12 +324,16 @@ class Docking():
 				if (math.fabs(yaw_error) > 0.15):
 					cmd_vel.angular.z = 0.15 * math.fabs(yaw_error) / yaw_error
 				else:
-					cmd_vel.angular.z = yaw_error 
-				if (math.fabs(yaw_error) < 0.01):
+					if (math.fabs(yaw1_error) < 0.04):
+						cmd_vel.angular.z = 0.04 * yaw1_error / math.fabs(yaw1_error)
+					else:
+						cmd_vel.angular.z = yaw1_error 
+				if (math.fabs(yaw_error) < 0.02):
 					cmd_vel.angular.z = 0.0
 					step3 = False
 					step4 = True
 					print ("step3 is done")	
+					break
 
 			self.vel_pub.publish(cmd_vel)
 
@@ -373,7 +380,7 @@ class Docking():
 
 		rospy.loginfo("Go to Docking Position.")
 		stime = rospy.Time.now()
-		while math.fabs(x_error) >= 0.015 or math.fabs(y_error) >= 0.01 or math.fabs(yaw_error) > 0.01: 
+		while math.fabs(x_error) >= 0.015: 
 			calc_goal = self.calculate_goal(2)
 			euler = euler_from_quaternion(self.map_to_base[1])
 			mat = self.mat_from_euler(euler)
@@ -396,6 +403,12 @@ class Docking():
 				cmd_vel.linear.x = 0.1 * math.fabs(x_error) / x_error
 			else:
 				cmd_vel.linear.x = x_error
+
+			if (math.fabs(x_error) < 0.03):
+				cmd_vel.linear.x = 0
+				print ("docking step is done")
+				break
+				
 
 			self.vel_pub.publish(cmd_vel)
 
