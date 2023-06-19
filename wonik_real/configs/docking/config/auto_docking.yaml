@@ -14,11 +14,11 @@ auto_docking:
   
   reach: # reaching position and orientation
     pos:
-      x: -1.693
-      y: 0.643
+      x: 11.676
+      y: 4.784
       z: 0
     quat:
       x: 0
       y: 0
-      z: -0.745
-      w: 0.667
+      z: -0.702
+      w: 0.712

@@ -18,7 +18,8 @@
   <build_depend>trajectory_msgs</build_depend>
   <build_depend>fastech_sdk</build_depend>
   <build_depend>fastech_ros_sdk</build_depend>
-
+  <build_depend>md_sdk</build_depend>
+  
   <run_depend>roscpp</run_depend>
   <run_depend>rospy</run_depend>
   <run_depend>sensor_msgs</run_depend>
@@ -26,6 +27,7 @@
   <run_depend>trajectory_msgs</run_depend>
   <run_depend>fastech_ros_sdk</run_depend>
  <run_depend>fastech_sdk</run_depend>
+  <run_depend> md_sdk </run_depend>
   <!-- The export tag contains other, unspecified, tags -->
   <export>
     <!-- Other tools can request additional information be placed here -->
